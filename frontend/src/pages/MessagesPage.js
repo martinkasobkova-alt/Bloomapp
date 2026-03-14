@@ -115,7 +115,7 @@ const MessagesPage = () => {
       if (isMobile && selectedUser) {
         main.style.height = '100dvh';
         main.style.maxHeight = '100dvh';
-        main.style.paddingTop = '59px';
+        main.style.paddingTop = '52px';
       } else {
         main.style.height = 'calc(100dvh - 60px)';
         main.style.maxHeight = 'calc(100dvh - 60px)';

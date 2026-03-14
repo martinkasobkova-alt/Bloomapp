@@ -177,12 +177,12 @@ export const Navigation = () => {
   const handleLogout = () => { logout(); navigate('/auth'); };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 glass" data-testid="main-header">
+    <header className="fixed top-0 left-0 right-0 z-40 glass top-navbar" data-testid="main-header">
       <div className="pride-bar" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 gap-2">
-          <Link to="/" className="flex items-center gap-1.5 shrink-0" data-testid="logo-link">
-            <LotusLogo size={34} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 md:py-0">
+        <div className="flex items-center justify-between h-10 md:h-14 gap-2">
+          <Link to="/" className="flex items-center gap-1.5 shrink-0 nav-logo-link" data-testid="logo-link">
+            <LotusLogo size={34} className="nav-logo" />
             <span className="font-heading text-base font-bold text-bloom-violet hidden sm:block">Bloom</span>
           </Link>
 

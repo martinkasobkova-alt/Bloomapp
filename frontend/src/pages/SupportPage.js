@@ -155,7 +155,7 @@ const SupportPage = () => {
         <div className="pride-bar mb-2" />
 
         {/* Post type tabs */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="section-filters flex items-center gap-2 mb-4">
           {[
             { value: 'all', label: 'Vše' },
             { value: 'offer', label: 'Nabídky', icon: ArrowUpRight },
@@ -180,7 +180,7 @@ const SupportPage = () => {
         </div>
 
         {/* Mobile-only filters - location and category */}
-        <div className="flex md:hidden gap-2 mb-4">
+        <div className="section-filters flex md:hidden gap-2 mb-4">
           <div className="flex rounded-lg border border-border overflow-hidden flex-shrink-0">
             {[{ v: 'CZ', l: 'ČR' }, { v: 'WORLD', l: 'Svět' }].map(x => (
               <button
@@ -212,7 +212,7 @@ const SupportPage = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <form onSubmit={handleSearch} className="flex-1 flex gap-2">
+          <form onSubmit={handleSearch} className="section-search flex-1 flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bloom-sub/50" />
               <Input placeholder="Hledat..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" data-testid="support-search-input" />

@@ -366,7 +366,7 @@ const NewsPage = () => {
         <SectionHeader sectionKey="news" defaultTitle="Aktuality" defaultSubtitle="Novinky ze světa trans komunity" defaultColor="#5BCEFA" />
         <div className="pride-bar mb-2" />
 
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+        <div className="section-filters flex flex-wrap items-center justify-between gap-2 mb-6">
           <div className="flex flex-wrap gap-1.5">
             {newsCats.map(c=>(
               <button key={c.id} onClick={()=>setActiveCat(c.id)}

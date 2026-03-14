@@ -192,3 +192,30 @@ body.messages-active footer {
 main .page-title {
   margin-top: 40px;
 }
+
+/* Mobile compact layout - section headers, filters, navbar (~30% smaller top area) */
+@media (max-width: 768px) {
+  .top-navbar .nav-logo-link .lotus-logo,
+  .top-navbar .nav-logo {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .section-header .section-marker {
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+  }
+  main .pride-bar {
+    margin-bottom: 6px !important;
+  }
+  .section-filters button,
+  .section-filters [data-slot="select-trigger"],
+  .section-filters .flex.rounded-lg.border button {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+  .section-search input {
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+}

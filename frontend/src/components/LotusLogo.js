@@ -1,7 +1,7 @@
 import React from 'react';
 
-export const LotusLogo = ({ size = 40 }) => (
-  <svg width={size} height={size} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="lotus-logo">
+export const LotusLogo = ({ size = 40, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={`lotus-logo ${className}`.trim()}>
     <ellipse cx="60" cy="98" rx="32" ry="6" fill="#6FE3C1" opacity="0.3"/>
     <path d="M60 20 C66 45, 66 65, 60 88 C54 65, 54 45, 60 20" fill="white" stroke="#E8A0BF" strokeWidth="1.5"/>
     <path d="M60 88 C42 76, 30 52, 36 28 C46 48, 54 70, 60 88" fill="#F5A9B8" opacity="0.7" stroke="#E8A0BF" strokeWidth="1"/>

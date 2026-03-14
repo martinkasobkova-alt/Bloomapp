@@ -213,7 +213,7 @@ const LegalPage = () => {
           </div>
 
           {/* Category filter */}
-          <div className="flex flex-wrap gap-1.5 mb-4">
+          <div className="section-filters flex flex-wrap gap-1.5 mb-4">
             {[{ id: 'all', name: 'Vše' }, ...categories].map(c => (
               <button key={c.id} onClick={() => setCatFilter(c.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${catFilter === c.id ? 'bg-bloom-violet text-white' : 'bg-white border border-border text-bloom-sub hover:border-bloom-violet/50 hover:text-bloom-violet'}`}

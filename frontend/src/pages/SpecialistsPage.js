@@ -181,8 +181,8 @@ const SpecialistsPage = () => {
         />
         <div className="pride-bar mb-2" />
 
-        <div className="space-y-3 mb-6">
-          <form onSubmit={handleSearch} className="flex gap-2">
+        <div className="section-filters space-y-3 mb-6">
+          <form onSubmit={handleSearch} className="section-search flex gap-2">
             <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bloom-sub/50" /><Input placeholder="Hledat podle jména nebo města..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" data-testid="specialists-search-input" /></div>
             <Button type="submit" className="bg-bloom-violet text-white hover:bg-bloom-violet/90">Hledat</Button>
           </form>
