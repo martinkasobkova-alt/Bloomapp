@@ -1,0 +1,62 @@
+{
+  "summary": "Iteration 40 - Tested 8 new features/bug fixes. Found and fixed 1 critical bug: RichTextEditor.jsx missing 'useEffect' import causing ReferenceError crash when edit dialogs opened. After fix, all 14 backend tests PASS and all 11 frontend tests PASS.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "bug_fixed": {
+    "file": "/app/frontend/src/components/RichTextEditor.jsx",
+    "issue": "useEffect was used on line 20 (with [value] dependency) but was NOT imported. Import only had { useRef, useState, useCallback }.",
+    "error": "ReferenceError: useEffect is not defined - crashed all edit dialogs (news edit, article edit) that use RichTextEditor with existing content",
+    "fix": "Added useEffect to import: import React, { useRef, useState, useCallback, useEffect } from 'react';",
+    "rca": "Developer added a second useEffect (line 20) to handle external value resets, but forgot to add useEffect to the import statement. The initial mount useEffect (line 93) used React.useEffect syntax and worked fine. The new one used bare useEffect which was undefined."
+  },
+  "features_tested": {
+    "services_empty_location_bug": "PASS - Service created with empty location. Appears in GET /api/services?country=CZ (query now includes empty string in $in array). Backend test confirmed.",
+    "services_empty_location_specific_filter": "PASS - Service with empty location also appears when filtering by specific location (uses $or with empty string check).",
+    "rich_text_editor_cursor": "PASS - After fixing the useEffect import, typing 'CURSOR_TEST' in the editor preserves text at correct position. No cursor jumping.",
+    "admin_news_edit_button": "PASS - 16 edit (pencil) buttons present in Admin > Aktuality tab. data-testid='edit-news-{id}' pattern confirmed.",
+    "admin_news_edit_dialog": "PASS - Clicking edit button opens 'Upravit aktualitu' dialog with RichTextEditor pre-loaded.",
+    "admin_specialist_edit_button": "PASS - 7 edit (pencil) buttons present in Admin > Odbornici tab. data-testid='edit-specialist-{id}' pattern confirmed.",
+    "admin_specialist_edit_dialog": "PASS - Clicking edit button opens 'Upravit odborníka' dialog with all fields pre-filled (name, address, city, region, country, localities).",
+    "legal_question_form_title_only": "PASS - Question form dialog has ONLY 'Otázka' title input (Input field). NO Podrobnosti textarea. Confirmed 0 textareas in form.",
+    "legal_question_delete_btn": "PASS - 8 trash icon delete buttons visible for admin (data-testid='delete-question-{id}')",
+    "legal_question_answer_input": "PASS - Expanding a question shows answer Textarea (data-testid='answer-input-{id}') and send button (data-testid='answer-submit-{id}') for admin/lawyer.",
+    "questions_section_legal_filter": "PASS - GET /api/questions?section=legal returns only legal questions (specialist question NOT in results).",
+    "questions_section_specialists_filter": "PASS - GET /api/questions?section=specialists returns only specialist questions (legal question NOT in results).",
+    "delete_question_admin": "PASS - Admin can delete legal question (200). Regular user gets 403.",
+    "answer_question_admin": "PASS - Admin can answer legal question (200). Regular user gets 403.",
+    "answer_question_regular_specialists": "PASS - Regular user cannot answer specialist question (403).",
+    "specialists_qa_section": "PASS - Q&A section 'Dotazy a odpovědi' present at bottom of Specialists page.",
+    "specialists_ask_question_btn": "PASS - 'Položit otázku' button present (data-testid='ask-specialist-question-btn').",
+    "specialists_question_section_field": "PASS - Posting specialist question saves with section='specialists'. Question appears in GET /api/questions?section=specialists.",
+    "messages_auto_search": "PASS - Typing 'bloom' in search field triggers auto-search via 280ms debounce (without pressing Enter). 5 users found (bloom_admin_190155 etc). data-testid='search-user-{id}' elements confirmed."
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter40_features.py",
+    "/app/test_reports/pytest/iter40_features.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FIXED: RichTextEditor.jsx - useEffect not imported (line 1). Added useEffect to import. Without this fix, ALL edit dialogs using RichTextEditor with pre-existing content crashed with 'ReferenceError: useEffect is not defined'."
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/RichTextEditor.jsx",
+    "/app/backend/tests/test_iter40_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14)",
+    "frontend": "100% (all 11 features verified)"
+  },
+  "test_credentials": "test1@bloom.cz / test123 (admin)",
+  "seed_data_creation": "Created and deleted test services, questions during backend testing. Created one specialist question 'TEST_Specialist question for iter40' in the database (not cleaned up).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Critical bug found and fixed: RichTextEditor.jsx missing useEffect import. After fix: (1) Admin news edit dialog works with RichTextEditor pre-loaded. (2) All Q&A features for legal and specialists working. (3) Services with empty location appear in country filter. (4) Messages auto-search with 280ms debounce works. Backend: GET /api/questions?section=legal correctly excludes specialists questions. GET /api/questions?section=specialists correctly excludes legal questions. Permissions enforced: admin/lawyer for legal, admin/specialist for specialists.",
+  "rca_of_issue": "RichTextEditor.jsx: Developer refactored the component to add a second useEffect (lines 20-31) that handles external value changes (e.g., form reset). The initial mount useEffect at line 93 used React.useEffect syntax and worked. The new useEffect at line 20 used bare useEffect syntax but forgot to add it to the import. This caused 'ReferenceError: useEffect is not defined' crash whenever the component was rendered with a non-empty value prop (i.e., when editing existing content). Fix: Added useEffect to the import statement on line 1."
+}

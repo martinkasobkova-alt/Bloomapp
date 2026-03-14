@@ -1,0 +1,140 @@
+{
+  "identity": {
+    "name": "Ženy ženám",
+    "mission": "To create a safe, elegant, and optimistic digital sanctuary for the trans community.",
+    "tone": "Safe, Welcoming, Hopeful, Empowering, Elegant",
+    "theme_mode": "dark"
+  },
+  "typography": {
+    "font_family": {
+      "headings": ["Playfair Display", "serif"],
+      "body": ["Inter", "sans-serif"],
+      "accent": ["DM Sans", "sans-serif"]
+    },
+    "scale": {
+      "h1": "text-5xl md:text-6xl font-bold tracking-tight leading-none",
+      "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body": "text-base md:text-lg leading-relaxed text-muted-foreground",
+      "caption": "text-sm font-medium tracking-wide uppercase text-muted-foreground/70"
+    },
+    "rules": [
+      "Do NOT use Inter for headings.",
+      "Use Playfair Display for all major headings to evoke elegance and humanity.",
+      "Use loose line-height for body text to improve readability in dark mode."
+    ]
+  },
+  "colors": {
+    "palette": {
+      "background": "#0f172a",
+      "foreground": "#f8fafc",
+      "primary": "#F5A9B8",
+      "secondary": "#5BCEFA",
+      "accent": "#ffffff",
+      "muted": "#1e293b",
+      "muted_foreground": "#94a3b8",
+      "border": "#334155",
+      "card": "#1e293b",
+      "destructive": "#ef4444",
+      "success": "#10b981",
+      "warning": "#f59e0b"
+    },
+    "semantic": {
+      "brand_pink": {
+        "default": "#F5A9B8",
+        "dark_mode_accessible": "#D18EA4",
+        "usage": "Community love, support, primary actions"
+      },
+      "brand_blue": {
+        "default": "#5BCEFA",
+        "dark_mode_accessible": "#4DA8D2",
+        "usage": "Trust, medical, legal, information"
+      },
+      "brand_white": {
+        "default": "#FFFFFF",
+        "dark_mode_accessible": "#E2E8F0",
+        "usage": "Clarity, truth, text"
+      }
+    },
+    "gradients": {
+      "hero_glow": "bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 blur-3xl",
+      "card_hover": "hover:bg-gradient-to-br hover:from-white/5 hover:to-white/0"
+    },
+    "rules": [
+      "Never use pure black (#000000). Use Deep Slate (#0f172a).",
+      "Never use pure white text on dark backgrounds. Use Off-White (#f8fafc).",
+      "Trans colors (Pink/Blue) must be used as accents, not backgrounds for text.",
+      "Ensure all text meets WCAG AA contrast ratios."
+    ]
+  },
+  "layout_strategies": {
+    "general": [
+      "Mobile-First: Always design for mobile grids first.",
+      "Bento Grids: Use asymmetric grids for dashboards and directories.",
+      "Generous Spacing: Use p-6, p-8, gap-6, gap-8.",
+      "Rounded Corners: Use rounded-2xl or rounded-3xl for a friendly, safe feel."
+    ],
+    "specific_pages": {
+      "landing": "Hero section with emotional 'orb' glow background. Large serif typography. Trust signals upfront.",
+      "service_exchange": "Card-based grid. Clean hierarchy. Focus on the service offered.",
+      "doctor_directory": "Split view: Map on one side (desktop) / Top (mobile), List on the other. Custom dark map styles.",
+      "legal": "Clean, text-heavy but legible. clear categorization (Q&A vs Articles)."
+    },
+    "z_index": {
+      "base": "z-0",
+      "content": "z-10",
+      "sticky_nav": "z-40",
+      "modal": "z-50",
+      "toast": "z-50"
+    }
+  },
+  "components": {
+    "cards": {
+      "style": "bg-card border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1",
+      "glass": "bg-slate-900/60 backdrop-blur-md border-white/10"
+    },
+    "buttons": {
+      "primary": "bg-primary text-slate-900 hover:bg-primary/90 rounded-full font-medium px-8",
+      "secondary": "bg-secondary/10 text-secondary hover:bg-secondary/20 border border-secondary/20 rounded-full font-medium px-6",
+      "ghost": "hover:bg-white/5 text-foreground rounded-full px-4"
+    },
+    "inputs": {
+      "style": "bg-slate-900/50 border-border focus:border-primary focus:ring-1 focus:ring-primary rounded-xl"
+    },
+    "navigation": {
+      "style": "Glassmorphism header. Sticky. blurred background.",
+      "rule": "NEVER use transparent background without blur if content scrolls under it."
+    }
+  },
+  "visual_assets": {
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 1.5 or 2. Rounded joins."
+    },
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1568680466895-34b9504c8b10?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwd29tZW4lMjBmcmllbmRzJTIwdGFsa2luZyUyMGxhdWdoaW5nJTIwY29mZmVlJTIwc2hvcHxlbnwwfHx8fDE3NzI3MTY3NTl8MA&ixlib=rb-4.1.0&q=85",
+      "community_1": "https://images.unsplash.com/photo-1758525225988-d34bcbcc00a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwzfHxkaXZlcnNlJTIwd29tZW4lMjBmcmllbmRzJTIwdGFsa2luZyUyMGxhdWdoaW5nJTIwY29mZmVlJTIwc2hvcHxlbnwwfHx8fDE3NzI3MTY3NTl8MA&ixlib=rb-4.1.0&q=85",
+      "community_2": "https://images.unsplash.com/photo-1760623681430-9224e69d9683?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwyfHxkaXZlcnNlJTIwd29tZW4lMjBmcmllbmRzJTIwdGFsa2luZyUyMGxhdWdoaW5nJTIwY29mZmVlJTIwc2hvcHxlbnwwfHx8fDE3NzI3MTY3NTl8MA&ixlib=rb-4.1.0&q=85",
+      "doctor_consult": "https://images.pexels.com/photos/7579823/pexels-photo-7579823.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "legal_meeting": "https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MjJ8MHwxfHNlYXJjaHwxfHxsYXd5ZXIlMjBtZWV0aW5nfGVufDB8fHx8MTc3MjcxNjc2OXww&ixlib=rb-4.1.0&q=85",
+      "pride_flag_art": "https://images.unsplash.com/photo-1562229126-0cb2e7c2b2e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwzfHx0cmFuc2dlbmRlciUyMHByaWRlJTIwZmxhZyUyMGFydGlzdGljJTIwYWJzdHJhY3R8ZW58MHx8fHwxNzcyNzE2NzYwfDA&ixlib=rb-4.1.0&q=85",
+      "pride_celebration": "https://images.unsplash.com/photo-1593347535897-06149dba667c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHwxfHxwcmlkZSUyMHBhcmFkZSUyMGhhcHB5JTIwcGVvcGxlfGVufDB8fHx8MTc3MjcxNjc3MHww&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "accessibility": {
+    "contrast": "Ensure at least 4.5:1 contrast ratio for normal text.",
+    "focus": "Visible focus rings on all interactive elements.",
+    "aria": "Use proper aria-labels for icon-only buttons.",
+    "testing": "All interactive elements MUST have a data-testid attribute (kebab-case)."
+  },
+  "instructions_to_main_agent": [
+    "Install 'lucide-react' if not present.",
+    "Configure tailwind.config.js to use the custom font families.",
+    "Create a 'Layout' component that wraps the app with the dark theme provider and navigation.",
+    "Use 'framer-motion' for subtle page transitions (opacity/y-axis slide).",
+    "For the Map, use a dark-themed map style (Google Maps or Leaflet).",
+    "Implement the 'Service Exchange' using a Bento Grid layout for the listings.",
+    "For the 'Legal' section, differentiate Q&A and Articles visually (e.g., Q&A bubbles vs Article cards).",
+    "Ensure the 'News' section looks editorial (large images, clear typography)."
+  ]
+}

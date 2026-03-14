@@ -1,0 +1,101 @@
+{
+  "summary": "Phase 2 Community Structure Features Testing. All 15 backend tests passed (100%). All 10 frontend feature items verified and passing via Playwright. Tested: Community Guidelines page (/community), NewsPage 'Zkušenosti komunity' category, User Search in navbar.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/users/search",
+        "issue": "Duplicate endpoint defined at server.py lines 828 and 1295. FastAPI uses first one (line 828) which is correct. Line 1295 version (no min-chars check, returns all fields, max 20 results) is dead code but should be removed.",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "GET /api/users/search (unauthenticated)",
+        "issue": "Returns 403 Forbidden instead of 401 Unauthorized for unauthenticated requests. Semantically, 401 is more appropriate.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "HomePage footer",
+        "issues": [
+          "HomePage.js (line 216) has its own internal <footer> with '© 2024 Bloom' (wrong year) that duplicates the Layout footer. This renders TWO footers on the homepage. Layout footer (correct) shows © 2026 with all 4 links. HomePage footer shows only © 2024 with no links."
+        ]
+      }
+    ]
+  },
+  "features_tested": {
+    "1_community_page_loads": {
+      "status": "PASS",
+      "details": "GET /community renders with 'Zásady komunity' H1, all 6 principles, 'Jak nahlásit problém' reporting section, 'O projektu Bloom' section. Publicly accessible without auth."
+    },
+    "2_footer_links": {
+      "status": "PASS",
+      "details": "Layout footer visible on all pages with links: O projektu (/community#about), Zásady komunity (/community), Ochrana soukromí (/community#privacy), Kontakt (mailto:martinasobku@gmail.com). Verified via query_selector_all('footer a, footer nav a') returning 4 links."
+    },
+    "3_news_zkusenosti_filter": {
+      "status": "PASS",
+      "details": "data-testid=news-cat-zkusenosti button found on /news page with text 'Zkušenosti komunity'"
+    },
+    "4_zkusenosti_note": {
+      "status": "PASS",
+      "details": "Clicking 'Zkušenosti komunity' shows data-testid=zkusenosti-note with 'Osobní zkušenosti členů komunity.' text"
+    },
+    "5_users_search_api": {
+      "status": "PASS",
+      "details": "GET /api/users/search?q=te returns 200 with list of users. Requires auth (403 without token). Empty query and 1-char return []. Min 2 chars required. Max 10 results."
+    },
+    "6_search_icon_visible": {
+      "status": "PASS",
+      "details": "data-testid=user-search-toggle button visible in navbar when logged in"
+    },
+    "7_search_panel_opens": {
+      "status": "PASS",
+      "details": "Clicking toggle opens data-testid=user-search-panel with data-testid=user-search-input inside"
+    },
+    "8_search_shows_results": {
+      "status": "PASS",
+      "details": "Typing 'te' shows 10 user results with name and location"
+    },
+    "9_min_2_chars": {
+      "status": "PASS",
+      "details": "1-char query 't' shows 0 results. 2-char query 'te' shows 10 results."
+    },
+    "10_click_navigates": {
+      "status": "PASS",
+      "details": "Clicking first search result navigates to /users/{userId} correctly"
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase2_community.py",
+    "/app/test_reports/pytest/pytest_phase2.xml"
+  ],
+  "action_items": [
+    "MINOR: Remove duplicate /api/users/search endpoint at server.py line 1295 (dead code, first definition at line 828 is used)",
+    "MINOR: Fix copyright year in HomePage.js line 216 from '2024' to '2026' to match Layout footer",
+    "MINOR: Consider removing the internal <footer> in HomePage.js entirely since Layout already provides a footer with navigation links"
+  ],
+  "critical_code_review_comments": [
+    "server.py has duplicate @api_router.get('/users/search') at lines 828 and 1295 - the line 1295 version is dead code with less safe behavior (no min-chars check, exposes more user fields, max 20 results, no banned user filter). Should be removed.",
+    "server.py is 1617 lines - well above the 700-line file size guideline and should be split into smaller router modules."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_phase2_community.py"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15)",
+    "frontend": "100% (10/10 features)"
+  },
+  "test_credentials": {
+    "email": "test1@bloom.cz",
+    "password": "test123",
+    "role": "admin"
+  },
+  "seed_data_creation": "None - test_create_news_with_zkusenosti_category created and deleted a test news item",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Phase 2 community features all passing: /community page, NewsPage zkusenosti category, user search in navbar. Known code quality issues: duplicate /users/search endpoint in server.py (lines 828 and 1295) and HomePage.js has its own <footer> with wrong copyright year (2024 vs 2026 in Layout footer). Auth login uses input[type=email]/input[type=password] selectors (no data-testid on auth form). Test base URL: https://profile-hub-228.preview.emergentagent.com"
+}

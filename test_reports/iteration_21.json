@@ -1,0 +1,63 @@
+{
+  "summary": "Iteration 21 testing complete. All features verified: (1) Login page layout - centered card with PWA section below, (2) Google login button 'Přihlásit se přes Google' visible and correctly configured to redirect to auth.emergentagent.com, (3) Google auth API returns 400/401 for invalid session_id, (4) News media upload works for authenticated users, (5) News creation form has file upload buttons for image and video, (6) Profile has 3 tabs [Profil] [Galerie] [Moje cesta], (7) Moje cesta tab shows stage options, save button, find similar button, (8) Mobile chat layout uses 'hidden md:flex' CSS, (9) Mobile specialist filters show text labels, (10) Rate limiting not triggered on single request, (11) Honeypot field rejects bots, (12) Email verification endpoint works, (13) Authentication works, (14) News media serving returns 404 for nonexistent files.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "feature_test_results": {
+    "login_page_layout": "PASS - Login card centered, PWA install section below login panel (flex-col layout)",
+    "google_login_button": "PASS - Button 'Přihlásit se přes Google' visible with Google logo, onclick redirects to https://auth.emergentagent.com/",
+    "google_auth_api_missing_session_id": "PASS - POST /api/auth/google/session without session_id returns 400",
+    "google_auth_api_invalid_session_id": "PASS - POST /api/auth/google/session with invalid session_id returns 401 (or 502 if Emergent auth unreachable)",
+    "honeypot_rejects_bot": "PASS - Registration with filled 'website' field returns 400 'Registrace se nezdařila'",
+    "honeypot_allows_empty": "PASS - Empty honeypot field does not trigger anti-spam rejection",
+    "email_verification_invalid_token": "PASS - GET /api/auth/verify-email/invalid returns 400",
+    "news_media_upload_requires_auth": "PASS - POST /api/news/upload-media without auth returns 401/403",
+    "news_media_upload_with_auth": "PASS - POST /api/news/upload-media with auth responds (200 or format validation)",
+    "news_media_serving_404": "PASS - GET /api/media/news/nonexistent.jpg returns 404 (public endpoint)",
+    "rate_limiting_single_request": "PASS - Single login request not rate limited",
+    "authentication_works": "PASS - Login with test1@bloom.cz/test123 returns token and user",
+    "profile_3_tabs": "PASS - Profile page has tabs: [Profil] [Galerie] [Moje cesta]",
+    "moje_cesta_tab_content": "PASS - Tab shows 10 stage options, personal note field, public toggle, save button, find similar button",
+    "news_create_form_file_uploads": "PASS - Form has 'Nahrát obrázek...' and 'Nahrát video...' upload buttons plus URL inputs",
+    "mobile_chat_layout": "PASS - Sidebar uses 'hidden md:flex' when chat selected (line 192 MessagesPage.js)",
+    "mobile_specialist_filters": "PASS - All filter buttons show full text labels on mobile viewport (Psychologie, Plastická chirurgie, etc.)"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_bloom_iteration21.py",
+    "/app/test_reports/pytest/pytest_results_iter21.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "All iteration 21 features implemented correctly",
+    "Google Auth integration at AuthPage.js lines 228-232: redirects to auth.emergentagent.com with proper redirect_uri",
+    "GoogleCallback.jsx handles OAuth callback with session_id extraction from URL hash",
+    "Backend /api/auth/google/session exchanges session_id for user data via Emergent Auth API",
+    "Honeypot field 'website' in UserCreate model, checked at line 445 server.py",
+    "Rate limiter class implemented at lines 53-65 server.py with configurable limits",
+    "News media upload at line 1630-1660 server.py, stores in /media/news/ directory",
+    "NewsPage.js lines 261-284 implement file upload buttons with data-testid attributes",
+    "AuthPage.js uses flex-col layout ensuring PWA section appears below login card",
+    "MessagesPage.js line 192: sidebar hidden on mobile when selectedUser truthy"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_bloom_iteration21.py"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17 tests passed)",
+    "frontend": "100% (all feature scenarios verified via Playwright)"
+  },
+  "test_credentials": {
+    "admin": {"email": "test1@bloom.cz", "password": "test123"},
+    "community_password": "Transfortrans"
+  },
+  "seed_data_creation": "Test news items created during backend testing (prefix 'Test News')",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iteration 21 all features verified. Key implementations: (1) Google Auth via Emergent managed auth at auth.emergentagent.com, (2) News media direct upload to /media/news/ with POST /api/news/upload-media, (3) Honeypot spam prevention via 'website' field in registration, (4) Rate limiting per IP for login/register/reset endpoints, (5) Login page layout is flex-col with PWA section below login card. Test file: /app/backend/tests/test_bloom_iteration21.py"
+}

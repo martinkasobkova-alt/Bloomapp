@@ -1,0 +1,119 @@
+{
+  "summary": "Phase 1 testing: UserProfilePage refactoring (sub-components) + role-based posting permissions. All 29/29 backend tests PASS. All frontend UI tests PASS.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "All dialogs (RateUser, ReportUser, etc.)",
+        "issues": ["Console warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent} - accessibility warning, non-functional"]
+      }
+    ]
+  },
+  "features_tested": {
+    "1_userprofilepage_renders": {
+      "status": "PASS",
+      "details": "UserProfilePage renders with data-testid='user-profile-page', profile card (username, pronouns, location, rating, badges), gallery section, services/journey section"
+    },
+    "2_userratings_own_profile": {
+      "status": "PASS",
+      "details": "For own profile (isSelf=true): send-message-btn, rate-user-btn, report-user-btn are all hidden"
+    },
+    "3_userratings_other_profile": {
+      "status": "PASS",
+      "details": "For other user's profile: send-message-btn, rate-user-btn, report-user-btn all visible. Rate dialog (comment input, submit button), Report dialog (reason select, description input, submit button) both open/close correctly"
+    },
+    "4_usergallery_own_profile": {
+      "status": "PASS",
+      "details": "isSelf=true: upload-photo-btn and gallery-settings-btn visible. Empty gallery state shows 'Zatím žádné fotky' with camera icon"
+    },
+    "5_usergallery_other_profile": {
+      "status": "PASS",
+      "details": "isSelf=false: upload and settings buttons hidden. When gallery empty+public, returns null correctly. Layout adapts (journey moves to cols 2-3)"
+    },
+    "6_userjourney_services": {
+      "status": "PASS",
+      "details": "'Nabídky a poptávky' heading with Briefcase icon visible. Services shown correctly with offer/need/location badges. Expired badge shown for expired offers"
+    },
+    "7_news_categories_allowed_roles": {
+      "status": "PASS",
+      "details": "GET /api/news-categories returns allowed_roles for all categories. zkusenosti=['user','specialist','admin','lawyer'], others=['admin']"
+    },
+    "8_admin_news_categories": {
+      "status": "PASS",
+      "details": "GET /api/admin/news-categories requires auth (401 without token). Returns same data as public endpoint with allowed_roles"
+    },
+    "9_put_allowed_roles": {
+      "status": "PASS",
+      "details": "PUT /api/admin/news-categories/{id}/allowed-roles: requires admin (403 for regular user), requires auth (401 unauthenticated), updates and persists correctly, empty list → 400, all invalid roles → 400, nonexistent cat → 404"
+    },
+    "10_post_news_permissions": {
+      "status": "PASS",
+      "details": "Admin can post to any category. Regular user can post to zkusenosti (returns 200, is_community_story=True). Regular user cannot post to local/world (403). Dynamic role grant works. Unauthenticated → 401"
+    },
+    "11_newspage_admin_canpost": {
+      "status": "PASS",
+      "details": "Admin sees 'Nová aktualita' button on all categories: all, local, world, zkusenosti, tips"
+    },
+    "12_newspage_user_canpost": {
+      "status": "PASS",
+      "details": "Regular user: NO button on 'all', NO button on 'local', NO button on 'world'. Button 'Sdílet příběh' ONLY shown on zkusenosti category. Dialog submit says 'Sdílet příběh'"
+    },
+    "13_admin_newscatscard_shields": {
+      "status": "PASS",
+      "details": "Admin Content tab: Kategorie aktualit card shows Shield icon with count per category. zkusenosti=4, world=1, local=1, tips=1, events=1, interviews=1"
+    },
+    "14_admin_roles_editor": {
+      "status": "PASS",
+      "details": "Clicking Shield count expands roles-editor with role toggles (Uživatel, Specialista, Právník, Admin). For zkusenosti all 4 are selected. Toggle add/remove works. Save shows 'Oprávnění uložena' toast. Count updates immediately"
+    },
+    "15_public_profile_api": {
+      "status": "PASS",
+      "details": "GET /api/users/{id}/public-profile requires auth (403 unauthenticated). Returns username, avg_rating, rating_count. 404 for nonexistent user"
+    }
+  },
+  "backend_test_coverage": {
+    "TestNewsCategoriesPublic": "5/5 PASS - status, list, allowed_roles present, zkusenosti defaults, others admin-only",
+    "TestNewsCategoriesAdmin": "4/4 PASS - status, requires auth, allowed_roles present, matches public",
+    "TestUpdateNewsCategoryRoles": "8/8 PASS - requires admin, requires auth, add user role, persistence, empty rejected, invalid rejected, 404 nonexistent, restore",
+    "TestNewsPostPermissions": "7/7 PASS - admin anywhere, user to zkusenosti, user blocked from local, auth required, community_story flag, dynamic grant, cleanup",
+    "TestUserPublicProfile": "4/4 PASS - requires auth, correct fields, nonexistent→404, unauthenticated→403",
+    "TestCleanup": "1/1 PASS"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase1_subcatRoles.py",
+    "/app/test_reports/pytest/phase1_subcatRoles.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "UserGallery.js: md:col-span-3 on root element means gallery takes FULL ROW (3 cols) when rendered. When gallery returns null (empty+not self+not locked), the md:col-span-2 UserJourney correctly fills cols 2-3 of row 1. Layout is correct but could be confusing",
+    "NewsPage.js line 202-205: canPost for 'all' category falls back to (isAdmin || activeCat==='zkusenosti') which evaluates to false for regular users. This is correct behavior - no post button on 'all' tab",
+    "NewsPage.js: zkusenosti-note card has an extra 'Sdílet svůj příběh' button (line 338) shown when isAuthenticated && !canPost && activeCat==='zkusenosti'. For regular users (canPost=true for zkusenosti), this button correctly does NOT show",
+    "settings.py: _apply_allowed_roles_defaults() correctly ensures all categories have allowed_roles. The default for unknown categories is ['admin'] which is safe",
+    "news.py: POST /api/news dynamically fetches allowed_roles from DB, with fallback to hardcoded defaults for non-persisted categories. Logic is correct",
+    "DialogContent components missing aria-describedby attributes - accessibility issue (console warning). Should add aria-describedby or description for accessibility compliance",
+    "UserProfilePage.js: only ~130 lines (well refactored). UserGallery/UserRatings/UserJourney properly split into separate components"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_phase1_subcatRoles.py"
+  ],
+  "success_rate": {
+    "backend": "100% (29/29)",
+    "frontend": "100% (15/15 features verified)"
+  },
+  "test_credentials": {
+    "admin_email": "test1@bloom.cz",
+    "admin_password": "test123",
+    "community_password": "Transfortrans",
+    "note": "Registration requires password with uppercase, lowercase, digit AND special char (!@#$%)"
+  },
+  "seed_data_creation": "Created and deleted test user 'testuser_canpost@bloom-test.cz'. Temporarily changed world category allowed_roles to ['admin','user'] then restored to ['admin']. Restored tips category to ['admin'] after dynamic grant test.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Phase 1 fully tested. DB state: all categories have allowed_roles: zkusenosti=['user','specialist','admin','lawyer'], all others=['admin']. Admin user: test1@bloom.cz/test123. There is a test category 'haters' (id=search-icon-reveal) in DB that can be cleaned up. For Playwright tests: use page.add_init_script('sessionStorage.setItem(\"bloom_intro_shown\", \"1\")') before reload. Registration password requires: uppercase + lowercase + digit + special char.",
+  "rca_of_issues": "No critical issues found. Minor accessibility warning for missing aria-describedby on Dialog components (pre-existing issue, not from Phase 1 changes)"
+}

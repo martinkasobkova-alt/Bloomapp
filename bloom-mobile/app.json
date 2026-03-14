@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "a72a5419-289f-4bf3-8f9e-59e277b24d77"
+      }
+    },
+    "name": "Bloom",
+    "slug": "bloom-mobile",
+    "scheme": "bloom",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FCFBFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bloom.mobile",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Bloom používá Face ID pro bezpečné odemčení aplikace.",
+        "NSMicrophoneUsageDescription": "Bloom používá mikrofon pro nahrávání hlasových zpráv.",
+        "NSPhotoLibraryUsageDescription": "Bloom potřebuje přístup k fotkám pro odesílání obrázků ve zprávách.",
+        "NSCameraUsageDescription": "Bloom potřebuje kameru pro pořizování fotek."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#8A7CFF",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA"
+      ],
+      "package": "com.bloom.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-web-browser",
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Bloom používá Face ID pro bezpečné odemčení aplikace."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Bloom potřebuje přístup k fotkám pro odesílání obrázků ve zprávách.",
+          "cameraPermission": "Bloom potřebuje kameru pro pořizování fotek."
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}

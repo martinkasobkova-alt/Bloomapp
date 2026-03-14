@@ -1,0 +1,96 @@
+{
+  "summary": "Iteration 34: Hardcoded text cleanup and drag & drop navigation order. All 20/20 backend tests PASS. All 11/11 frontend test cases PASS. Key features verified: about_text (community page no hardcoded duplicate), help_text (register form), footer_text (layout), section drag & drop reordering, visibility toggle, navigation order and admin titles.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_tested": {
+    "1_community_about_text": {
+      "status": "PASS",
+      "details": "Community page 'O projektu Bloom' card shows ONLY admin about_text (no hardcoded paragraph before it). When about_text is empty, fallback text shows. No duplication."
+    },
+    "2_community_section_header_no_duplicate": {
+      "status": "PASS",
+      "details": "SectionHeader subtitle NOT duplicated by separate hardcoded <p> below it. Community page shows 'Komunita' title and 'Bezpečný prostor pro sdílení' subtitle exactly once via SectionHeader."
+    },
+    "3_register_form_help_text": {
+      "status": "PASS",
+      "details": "Register form shows admin help_text from /api/settings/texts when entry password is enabled. Confirmed by setting test value and verifying it appears in the Komunitní heslo section."
+    },
+    "4_footer_text": {
+      "status": "PASS",
+      "details": "Footer in Layout.js shows footer_text from admin settings. Verified by setting test value 'Test footer text for iteration 34' and confirming it appears in footer below copyright."
+    },
+    "5_admin_section_settings_order": {
+      "status": "PASS",
+      "details": "SectionSettingsCard shows sections in correct order by 'order' field: support(2), specialists(3), legal(4), news(5), nearby(6), community(7). Verified data-testid row order."
+    },
+    "6_admin_drag_handle": {
+      "status": "PASS",
+      "details": "Clicking 'Upravit' shows GripVertical drag handle (:: icon) on each section row. cursor-grab class confirmed. Switch toggles visible. 12 SVG icons in edit mode."
+    },
+    "7_drag_drop_reorder": {
+      "status": "PASS",
+      "details": "Dragged 'Aktuality' (news) above 'Právní poradna' (legal) using HTML5 drag events. After save, navigation shows new order (Aktuality BEFORE Právní poradna). Toast 'Nastavení sekcí uloženo' confirmed. Restored original order after test."
+    },
+    "8_visibility_toggle": {
+      "status": "PASS",
+      "details": "Toggled 'V mém okolí' to hidden → nav-nearby removed from navigation. Re-enabled → nav-nearby restored. 'Nastavení sekcí uloženo' toast on both saves."
+    },
+    "9_navigation_order": {
+      "status": "PASS",
+      "details": "Navigation renders: nav-home(Domů), nav-support(Vzájemná podpora), nav-specialists(Trans-friendly odborníci), nav-legal(Právní poradna nový svět), nav-news(Aktuality testuju), nav-nearby(V mém okolí). Correct order matching section order fields."
+    },
+    "10_navigation_admin_titles": {
+      "status": "PASS",
+      "details": "nav-legal='Právní poradna nový svět', nav-news='Aktuality testuju'. Both admin-overridden titles confirmed via data-testid selectors."
+    },
+    "11_api_sections_order_visible": {
+      "status": "PASS",
+      "details": "GET /api/settings/sections returns 'order' and 'visible' fields on ALL 6 sections. Default orders: support=2, specialists=3, legal=4, news=5, nearby=6, community=7. All sections visible=true after restore."
+    }
+  },
+  "backend_test_coverage": {
+    "TestTextSettingsAPI": "4/4 PASS - 200 status, dict response, only allowed keys, string values",
+    "TestSectionSettingsAPI": "7/7 PASS - 200 status, 6 keys, order on all, visible on all, default orders verified, titles present, admin overrides confirmed",
+    "TestSectionSettingsUpdate": "4/4 PASS - requires auth, order swap persists, visibility toggle persists, response has sections+message",
+    "TestTextSettingsAdminUpdate": "5/5 PASS - requires auth, footer_text persists, help_text persists, about_text persists, invalid key rejected 400"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter34_text_sections.py",
+    "/app/test_reports/pytest/iter34_text_sections.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "CommunityPage.js line 104: `texts.about_text || 'fallback'` - CORRECT, shows only ONE paragraph (either admin text or fallback, never both)",
+    "RegisterForm.js line 119: `texts.help_text || 'fallback'` - CORRECT, shows admin help_text when entry password is enabled",
+    "Layout.js line 90: `{texts.footer_text && <p>}` - CORRECT, footer_text only shown when non-empty",
+    "SectionSettingsCard.js: sortedFields sorts by order from draftSections/sectionSettings - CORRECT",
+    "SectionSettingsCard.js: GripVertical only shown when editingSections=true - CORRECT",
+    "Navigation.js: navItems sorted by sections[key].order ascending - CORRECT",
+    "useTextSettings.js: Module-level cache could cause stale data if admin updates texts without page refresh - low impact, acceptable",
+    "LotusIntro.jsx: 3.8s blocking overlay causes Playwright test timing issues - need sessionStorage bypass in tests"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter34_text_sections.py"
+  ],
+  "success_rate": {
+    "backend": "100% (20/20)",
+    "frontend": "100% (11/11 features verified)"
+  },
+  "test_credentials": {
+    "admin_email": "test1@bloom.cz",
+    "admin_password": "test123",
+    "community_password": "Transfortrans"
+  },
+  "seed_data_creation": "Set then cleared test values for footer_text, help_text, about_text. Enabled then disabled entry_password_enabled. All restored to original state. nearby section toggled off then restored to visible=true.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All iteration 34 features fully verified. Final DB state: legal.title='Právní poradna nový svět', news.title='Aktuality testuju', all sections visible=true, orders: support=2, specialists=3, legal=4, news=5, nearby=6, community=7. footer_text/about_text/help_text are all empty strings. entry_password_enabled=false. Navigation: Domů, Vzájemná podpora, Trans-friendly odborníci, Právní poradna nový svět, Aktuality testuju, V mém okolí. For Playwright tests: use page.add_init_script('sessionStorage.setItem(\"bloom_intro_shown\", \"1\")') before reload to skip LotusIntro.",
+  "rca_of_issues": "N/A - All features working correctly. Minor note: LotusIntro 3.8s blocking overlay required sessionStorage pre-seeding via add_init_script() before page reload to enable Playwright tab interactions."
+}

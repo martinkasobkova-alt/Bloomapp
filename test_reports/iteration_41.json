@@ -1,0 +1,46 @@
+{
+  "summary": "Iteration 41 - Tested 2 features: Q&A panel collapse bug fix (Specialists page) + Answer signature field (both Legal and Specialist Q&A). All 9 test cases passed across backend (8 pytest tests) and frontend (Playwright).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_tested": {
+    "spec_qa_panel_no_collapse_on_textarea_click": "PASS - Clicking inside the expanded answer textarea does NOT collapse the question panel",
+    "spec_qa_panel_no_collapse_on_typing": "PASS - Typing in the answer textarea does NOT collapse/close the expanded question panel",
+    "spec_qa_panel_no_collapse_on_signature_click": "PASS - Clicking in signature field does NOT collapse the panel",
+    "spec_qa_panel_no_collapse_on_signature_type": "PASS - Typing in signature field does NOT collapse the panel",
+    "spec_qa_signature_field_visible": "PASS - data-testid='spec-answer-signature-{id}' field is visible with placeholder 'Podpis (nepovinné), např. MUDr. Jana Nováková'",
+    "spec_qa_answer_with_signature_saved": "PASS - Answer with signature submitted successfully, 'Odpověď přidána!' toast shown",
+    "spec_qa_signature_displayed_italic": "PASS - Signature 'MUDr. Jan Novák, endokrinolog' displayed in italic (pink/muted) below answer content",
+    "legal_qa_signature_field_visible": "PASS - data-testid='answer-signature-{id}' field is visible with placeholder 'Podpis (nepovinné), např. JUDr. Jana Nováková'",
+    "legal_qa_answer_with_signature_saved": "PASS - Legal answer with signature submitted successfully, 'Odpověď přidána!' toast shown",
+    "legal_qa_signature_displayed_italic": "PASS - Signature 'JUDr. Marie Horáková, advokátka' displayed in italic below answer content",
+    "backend_post_answer_with_signature": "PASS - POST /api/questions/{id}/answers with signature field saves signature to DB correctly",
+    "backend_get_questions_legal_with_signature": "PASS - GET /api/questions?section=legal returns answers with 'signature' field",
+    "backend_get_questions_specialists_with_signature": "PASS - GET /api/questions?section=specialists returns answers with 'signature' field",
+    "backend_answer_without_signature_defaults_empty": "PASS - Omitting signature field defaults to empty string in DB and response",
+    "spec_qa_full_answer_submit_flow": "PASS - Type answer + fill signature + click Send = answer saved and displayed with signature in italic"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter41_qa_signature.py",
+    "/app/test_reports/pytest/iter41_qa_signature.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_iter41_qa_signature.py"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8 tests)",
+    "frontend": "100% (9/9 flow tests)"
+  },
+  "seed_data_creation": "Created test answers in specialist question 'kde najdu nejlepsi FFS' and expanded legal question for testing signature display",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Bug Fix #1 (panel collapse) and Feature #2 (answer signature) both verified working correctly. The collapse fix uses stopPropagation on expanded content div, textarea, and signature input - all three correctly prevent collapse. Signature field shows in italic using text-bloom-pride-pink/70 (specialists) and text-bloom-violet/70 (legal). Backend model AnswerCreate.signature defaults to empty string. Test credentials: test1@bloom.cz / test123 (admin). Previous iteration was 40 (100% pass). Login requires page.type() + Enter (not fill + click button)."
+}

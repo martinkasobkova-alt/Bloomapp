@@ -1,0 +1,59 @@
+{
+  "summary": "Phase P0 testing complete. All backend (24/24) and frontend tests passing. Tested: registration+welcome email, offer expiration system (filter/my-services/admin-settings/reactivate), and UI components for expiry badges.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "SupportPage route",
+        "issues": ["Route is /support, not /vzajemna-pomoc (review request mentioned /vzajemna-pomoc). Nav link says 'Vzájemná podpora' which is correct. No bug, just documentation note."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_p0_features.py",
+    "/app/test_reports/pytest/pytest_results_p0_v2.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SENDER_EMAIL in .env contains angle brackets: 'Bloom <noreply@budsva.eu>' - this is correct RFC 5322 format and should work with Resend API",
+    "Welcome email is non-blocking (wrapped in try/except) - registration succeeds even if email fails",
+    "Expiry filter in GET /api/services uses ISO string comparison which works correctly for UTC timestamps",
+    "GET /api/services/my returns ALL services including expired (no expiry filter) - this is the intended behavior",
+    "GET /users/{user_id}/public-profile also returns all services without expiry filter - expired shows with badge"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_p0_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% (24/24 tests passed)",
+    "frontend": "100% (all key flows verified)"
+  },
+  "test_credentials": {
+    "admin": {"email": "test1@bloom.cz", "password": "test123"},
+    "community_password": "Transfortrans"
+  },
+  "seed_data_creation": "Created test services via API; manually set one service (id: 40d9b653-0916-43c8-9eaf-6ee9ec6975eb) expires_at to past date for expiry filter testing",
+  "retest_needed": false,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "P0 features fully tested and working: 1) Registration+welcome email (Resend configured with Bloom <noreply@budsva.eu>), 2) Offer expiry system (expired filtered from /api/services, visible in /api/services/my and user profile, admin can reactivate), 3) Admin settings for expiry days (14/30/60/90 with default 30). SupportPage route is /support (not /vzajemna-pomoc). Expired badge uses CSS uppercase class so DOM text is 'Expirováno' but displays as 'EXPIROVÁNO'. Test user for expiry: service id 40d9b653-0916-43c8-9eaf-6ee9ec6975eb.",
+  "feature_test_results": {
+    "registration_token_user": "PASS - POST /api/auth/register returns token+user correctly",
+    "welcome_email_config": "PASS - Resend key=set, sender=Bloom <noreply@budsva.eu>, log shows 'Welcome email sent to TEST_p0_da9b4bd3@test.com'",
+    "get_services_hides_expired": "PASS - Expired offer NOT in GET /api/services public feed",
+    "get_my_services_shows_expired": "PASS - Expired offer IS in GET /api/services/my",
+    "offer_expiry_days_default_30": "PASS - GET /api/admin/settings/offer-expiry-days returns {days: 30}",
+    "update_expiry_days_14": "PASS - PUT /api/admin/settings/offer-expiry-days?days=14 changes to 14 (admin only)",
+    "reactivate_expired_offer": "PASS - PUT /api/admin/services/{id}/reactivate works, returns future expires_at",
+    "new_service_has_expires_at": "PASS - New service created with expires_at ~30 days from now",
+    "support_page_loads": "PASS - /support loads, shows 22 services, no expired in public feed",
+    "admin_settings_expiry_ui": "PASS - 'Platnost nabídek' section with 14/30/60/90 buttons, clicking works",
+    "admin_services_expirováno_badge": "PASS - Expirováno badge visible, Obnovit button present for expired offers",
+    "user_profile_expired_badge": "PASS - Expired offer shown in profile with EXPIROVÁNO badge",
+    "my_services_expired_visible": "PASS - My services view shows expired offer with EXPIROVÁNO badge + helper message"
+  }
+}

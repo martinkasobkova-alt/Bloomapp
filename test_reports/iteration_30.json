@@ -1,0 +1,58 @@
+{
+  "summary": "Notification preferences feature fully tested. Backend (19/19 tests pass) and Frontend (UI fully functional). GET /api/auth/me returns notification_prefs defaults, PUT saves correctly, UI shows 3 toggles with working save+toast.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "GET /api/auth/me returns notification_prefs field with all 3 keys (messages, services, news)",
+    "GET /api/auth/me returns boolean values for all notification_prefs keys",
+    "PUT /api/auth/notification-prefs returns 200 with notification_prefs object",
+    "PUT sets messages=False and persists correctly",
+    "PUT sets services=False and persists correctly",
+    "PUT sets news=False and persists correctly",
+    "PUT all=False allowed and persisted",
+    "Preferences persist to DB (verified via GET /api/auth/me after PUT)",
+    "PUT without auth returns 401/403",
+    "Partial body defaults: missing keys default to True (body.get key, True)",
+    "Disabling messages reflected in /api/auth/me - send_push_notification will skip user",
+    "Disabling services reflected in /api/auth/me - broadcast push will skip user",
+    "Disabling news reflected in /api/auth/me - news broadcast will skip user",
+    "Admin prefs restored to all True after all tests",
+    "Profile page loads without errors",
+    "Notification prefs card visible in Profile tab (data-testid=notification-prefs-card)",
+    "3 Switch toggles visible: notif-toggle-messages, notif-toggle-services, notif-toggle-news",
+    "All toggles default to 'checked' state (matches default_prefs all True)",
+    "Messages toggle toggles correctly to unchecked on click",
+    "News toggle toggles correctly to unchecked on click",
+    "Save button click shows success toast 'Nastavení oznámení uloženo!'",
+    "Saved preferences (messages=False, news=False, services=True) correctly persisted in DB",
+    "Preferences restored to all True after test cleanup"
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_notification_prefs.py",
+    "/app/test_reports/pytest/notif_prefs_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "MINOR: send_broadcast_push_notification builds disabled_ids via async for loop inside utils.py - this is correct and uses MongoDB query filtering {notification_prefs.{pref_key}: False} which is performant",
+    "MINOR: user_response_dict in auth_helpers.py correctly includes notification_prefs with default {messages:True, services:True, news:True} for users without prefs set",
+    "MINOR: The _PREF_KEY mapping message->messages, service->services, news->news is correctly implemented"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_notification_prefs.py"
+  ],
+  "success_rate": {
+    "backend": "100% (19/19)",
+    "frontend": "100%"
+  },
+  "seed_data_creation": "None - admin prefs restored to all True after tests",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Notification preferences feature fully working. Backend: PUT /api/auth/notification-prefs saves to MongoDB, GET /api/auth/me returns defaults. Frontend: notification-prefs-card in Profile tab with 3 switches (notif-toggle-messages, notif-toggle-services, notif-toggle-news) and save-notif-prefs-btn. Push filtering in utils.py uses _PREF_KEY mapping. Admin credentials: test1@bloom.cz / test123. Use token injection via localStorage for Playwright tests (rate limiter can block repeated form logins)."
+}

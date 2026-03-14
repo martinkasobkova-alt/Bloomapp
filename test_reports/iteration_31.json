@@ -1,0 +1,91 @@
+{
+  "summary": "RichTextEditor + HTML Sanitization testing complete. Backend 12/12 pass. Frontend fully working except one critical bug (Textarea missing import in LegalPage.js) was fixed during testing. One minor display bug found: HTML tags show as raw text in news card previews.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/news (bleach sanitization)",
+        "issue": "bleach with strip=True removes <script> tags but leaves inner text as plain text (e.g., 'alert(1)' becomes plain text). This is expected bleach behavior - tag is neutralized so script cannot execute, but text remains visible. Not a security issue."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "NewsPage.js (news listing cards) and AdminNewsTab.js (admin news list)",
+        "issue": "News card preview renders raw HTML tags as plain text when content contains HTML (e.g., '<h2>Test News Heading</h2><p>Test paragraph...' visible as text in card preview). Fix: strip HTML before showing preview in both NewsPage.js line 361 and AdminNewsTab.js line 106.",
+        "selector": "n.content in news card preview",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "All 9 toolbar buttons visible in Admin Aktuality tab: H1, H2, H3, P, Bold, Italic, List, Link, Table",
+    "rich-editor-area testid present and accepts input",
+    "H1 formatting applied when clicking editor-h1 button",
+    "Bullet list (UL/LI tags) created when clicking editor-ul button",
+    "Table popup opens with table-rows-input, table-cols-input, table-insert-btn",
+    "Table inserted into editor on clicking table-insert-btn",
+    "News creation from admin with HTML content succeeds (toast 'Aktualita přidána!')",
+    "POST /api/news - script tags stripped by bleach sanitization",
+    "POST /api/news - allowed tags (h1,h2,h3,p,strong,em,ul,li,a) preserved",
+    "POST /api/news - table tags (table,thead,tbody,tr,td,th) preserved with style attrs",
+    "POST /api/news - iframe stripped",
+    "POST /api/news - onclick attribute stripped",
+    "GET /api/articles returns list with content field",
+    "POST /api/articles creates article with HTML, script tags stripped",
+    "PUT /api/articles/:id updates and sanitizes HTML content",
+    "DELETE /api/articles/:id removes article, GET returns 404",
+    "GET /api/admin/articles returns all articles",
+    "PUT /api/articles/:id/toggle-publish toggles state correctly",
+    "Plain text backward compat - news with plain text content works",
+    "LegalPage loads with data-testid='legal-page'",
+    "Article cards render without raw HTML tags visible",
+    "Article detail view renders HTML via dangerouslySetInnerHTML correctly",
+    "Create article dialog uses RichTextEditor (not plain textarea)",
+    "Edit article dialog uses RichTextEditor with pre-populated content",
+    "Question dialog opens with title input and content textarea (after Textarea import fix)",
+    "No JS errors on legal page or question dialog",
+    "News detail page renders HTML content correctly (headings, bold, lists all rendered)"
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_rich_editor.py",
+    "/app/test_reports/pytest/rich_editor_results.xml"
+  ],
+  "action_items": [
+    "Fix HTML preview in news listing cards - strip HTML tags before showing preview in NewsPage.js line 361: change n.content.replace(/https?:\\/\\/\\S+/g,'') to n.content.replace(/<[^>]*>/g,'').replace(/https?:\\/\\/\\S+/g,'')",
+    "Fix HTML preview in admin news list - AdminNewsTab.js line 106: change {n.content} to {n.content.replace(/<[^>]*>/g, '').substring(0, 100)}"
+  ],
+  "critical_code_review_comments": [
+    "FIXED: LegalPage.js was missing 'import { Textarea } from ../components/ui/textarea' while Textarea was used on line 334 for the question dialog content input. This caused a ReferenceError when opening the Add Question dialog. Fixed by adding the import.",
+    "MEDIUM: NewsPage.js line 361 renders n.content raw in card preview. With rich text content this shows HTML tags as plain text. Should strip HTML: n.content.replace(/<[^>]*>/g,'').trim()",
+    "MEDIUM: AdminNewsTab.js line 106 renders {n.content} raw in admin news cards. Same issue - raw HTML tags visible when content is rich text.",
+    "MINOR: bleach sanitization correctly strips script/iframe/onclick but leaves inner text (this is expected bleach behavior, not a bug)"
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/LegalPage.js"
+  ],
+  "success_rate": {
+    "backend": "100% (12/12)",
+    "frontend": "95% (27/28 - raw HTML in card previews is a display bug)"
+  },
+  "seed_data_creation": "TEST_XSS News created during backend tests and cleaned up. TEST_Admin_RichText_News created during admin flow test and cleaned up.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "RichTextEditor is fully working in both Admin Aktuality tab and LegalPage (create/edit article dialogs). Backend sanitization works via bleach. Key fix applied: Textarea import added to LegalPage.js line 8. Remaining issue: HTML tags show as raw text in news listing card previews (NewsPage.js line 361 and AdminNewsTab.js line 106). Admin credentials: test1@bloom.cz / test123. Use localStorage.setItem('token', ...) injection approach for Playwright tests.",
+  "rca_of_issues": {
+    "Textarea_missing_import": {
+      "bug": "LegalPage.js uses Textarea component at line 334 for question dialog content but didn't import it",
+      "root_cause": "When RichTextEditor was added to LegalPage.js and the old imports were cleaned up, the Textarea import was accidentally removed",
+      "fix": "Added: import { Textarea } from '../components/ui/textarea'; to LegalPage.js imports",
+      "reproduction": "Navigate to /legal, click 'Přidat otázku' button - previously would crash with ReferenceError: Textarea is not defined"
+    },
+    "html_preview_raw_tags": {
+      "bug": "News cards in listing page and admin show raw HTML tags in preview text",
+      "root_cause": "NewsPage.js line 361 and AdminNewsTab.js line 106 render n.content directly without stripping HTML tags",
+      "fix": "Add .replace(/<[^>]*>/g, '') to strip HTML before preview truncation"
+    }
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "summary": "Iteration 36 - Article category permissions + NewsPage activeCat fix. 25/25 backend tests PASS. All frontend features verified. CRITICAL BUG FOUND AND FIXED in LegalPage.js: ReferenceError 'article is not defined' crashed LegalPage for regular users.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "LegalPage",
+        "issue": "FIXED: Line 270 used `article.author_id` instead of `a.author_id` (map iterator variable). Caused ReferenceError crashing entire LegalPage for any non-admin/non-lawyer user when articles are present.",
+        "selector": "articles map render",
+        "priority": "CRITICAL - FIXED"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Admin panel ArticleCatsCard",
+        "issues": ["Test data artifacts visible: 'Co vás trápí', 'Hledání auta', 'Test Kategorie', 'Zkušenosti komunity' article categories from previous tests. Admin may want to clean these up."]
+      },
+      {
+        "screen": "NewsPage",
+        "issues": ["Test category 'haters' visible in news category tabs - leftover from previous tests"]
+      }
+    ]
+  },
+  "features_tested": {
+    "1_article_cats_public_api": {
+      "status": "PASS",
+      "details": "GET /api/article-categories returns all 5 default categories with allowed_roles=['admin','lawyer'] defaults. All valid roles present."
+    },
+    "2_put_article_cat_roles": {
+      "status": "PASS",
+      "details": "PUT /api/admin/article-categories/{cat_id}/allowed-roles: requires admin (403 for user), updates correctly, persists to DB, empty→400, invalid roles→400, nonexistent→404"
+    },
+    "3_post_articles_blocked_user": {
+      "status": "PASS",
+      "details": "POST /api/articles returns 403 for regular user (role='user') for all article categories (default=['admin','lawyer'])"
+    },
+    "4_post_articles_admin": {
+      "status": "PASS",
+      "details": "Admin can post articles to all categories including 'pravni'"
+    },
+    "5_post_articles_lawyer": {
+      "status": "PASS",
+      "details": "User with role='lawyer' can post articles (dynamically granted+tested)"
+    },
+    "6_news_cats_merge": {
+      "status": "PASS",
+      "details": "GET /api/news-categories always returns all 6 defaults: zkusenosti, world, local, tips, events, interviews. All have allowed_roles. zkusenosti includes 'user' role. local has ['admin','user'] per DB."
+    },
+    "7_legalpage_admin_btn": {
+      "status": "PASS",
+      "details": "Admin user sees 'Přidat článek' button on LegalPage (canPostInFilter=true for admin)"
+    },
+    "8_legalpage_user_btn": {
+      "status": "PASS",
+      "details": "Regular user does NOT see 'Přidat článek' button (canPostInFilter=false, role='user' not in default allowed_roles=['admin','lawyer'])"
+    },
+    "9_admin_articlecatscard": {
+      "status": "PASS",
+      "details": "Admin panel Content tab shows 'Kategorie právní poradny' with Shield icon per category showing role count. Clicking toggles opens RolesEditor with role checkboxes (Uživatel, Specialista, Právník, Admin). Default categories show '2' (admin+lawyer)."
+    },
+    "10_newspage_admin_btn": {
+      "status": "PASS",
+      "details": "Admin sees 'Nová aktualita' button on ALL news category tabs (all, local, world, zkusenosti, etc.)"
+    },
+    "11_newspage_user_local": {
+      "status": "PASS",
+      "details": "Regular user sees 'Sdílet příběh' button on Domácí (local) tab because local has allowed_roles=['admin','user'] in DB. Dialog shows category='Domácí' confirming activeCat fix works."
+    },
+    "12_newspage_user_world": {
+      "status": "PASS",
+      "details": "Regular user does NOT see post button on 'Ze světa' tab (world is admin-only: allowed_roles=['admin'])"
+    },
+    "13_newspage_user_zkusenosti": {
+      "status": "PASS",
+      "details": "Regular user sees 'Sdílet příběh' button on zkusenosti tab (allowed_roles includes 'user')"
+    },
+    "14_newspage_activeCat_fix": {
+      "status": "PASS",
+      "details": "When regular user is on Domácí tab and clicks the post button, dialog form shows category='Domácí' (not 'zkusenosti'). The activeCat fix is working correctly."
+    }
+  },
+  "rca_of_issues": {
+    "bug": "LegalPage.js line 270: `article.author_id` should be `a.author_id`",
+    "root_cause": "In the articles.map(a => ...) callback, the map iterator variable is `a`, but the condition checking edit/delete button visibility used `article` (undefined). JavaScript's short-circuit evaluation meant admin users (isLawyerOrAdmin=true) never evaluated the undefined reference. Regular users (isLawyerOrAdmin=false) triggered evaluation → ReferenceError → React error boundary crash.",
+    "reproduction": "1. Login as regular user 2. Navigate to /legal 3. Any articles visible → crash with 'article is not defined'",
+    "fix": "Changed `article.author_id` to `a.author_id` in LegalPage.js line 270",
+    "file": "/app/frontend/src/pages/LegalPage.js"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter36_article_roles.py",
+    "/app/test_reports/pytest/iter36_article_roles.xml"
+  ],
+  "action_items": [
+    "CLEANUP: Remove test data artifacts from DB: article categories 'Co vás trápí', 'Hledání auta', 'Test Kategorie', 'Zkušenosti komunity' (test_categories leftover from previous iterations)",
+    "CLEANUP: Remove 'haters' test news category",
+    "CLEANUP: Remove test articles 'TEST_UI Legal Article', 'Test článek' from DB",
+    "OPTIONAL: Add aria-describedby to DialogContent components for accessibility"
+  ],
+  "critical_code_review_comments": [
+    "LegalPage.js line 270: CRITICAL BUG (FIXED) - `article.author_id` should be `a.author_id`. Crashed LegalPage for regular users.",
+    "NewsPage.js onClick handler (line 257): `onClick={() => { if(!isAdmin) setNewsCat(activeCat !== 'all' ? activeCat : 'zkusenosti'); }}` - This correctly uses activeCat now (was previously hardcoded to 'zkusenosti'). Fix confirmed working.",
+    "settings.py: `_merge_article_cats()` and `_merge_news_cats()` correctly ensure all default categories are always present even if not in DB.",
+    "news.py: `create_article()` now correctly fetches allowed_roles from article_categories collection and defaults to ['admin','lawyer'] for unconfigured categories. Role check works correctly.",
+    "ArticleCatsCard.js: RolesEditor component correctly shows existing roles as selected (purple), supports toggle and save. The `handleUpdateArticleCatRoles` API call correctly sends JSON array body.",
+    "LegalPage.js: `allowedPostCats` computed correctly from categories.filter(c => user && c.allowed_roles.includes(user.role)). `canPostInFilter` correct for category filter.",
+    "Test category 'zkusenosti' appearing in article_categories (mentioned in requirements as leftover) - has DB entry with custom allowed_roles but is not a real article category."
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/LegalPage.js (line 270: article.author_id → a.author_id)",
+    "/app/backend/tests/test_iter36_article_roles.py (new test file)"
+  ],
+  "success_rate": {
+    "backend": "100% (25/25)",
+    "frontend": "100% (14/14 features verified, 1 critical bug found and fixed)"
+  },
+  "test_credentials": {
+    "admin_email": "test1@bloom.cz",
+    "admin_password": "test123",
+    "community_password": "Transfortrans",
+    "note": "Registration requires password with uppercase + lowercase + digit + special char (!@#$%)"
+  },
+  "seed_data_creation": "Created and deleted TEST_ui_user36@bloom-test.cz for frontend testing. Backend tests created/cleaned TEST_article_roles@bloom-test.cz and TEST_article_perm@bloom-test.cz users. Test articles 'TEST_Admin Article - Iteration 36' and 'TEST_Lawyer Article - Iter 36' should be cleaned up (backend teardown handles these).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Phase 2 (article category permissions) fully tested. Critical bug fixed: LegalPage.js `article.author_id` → `a.author_id` (line 270). Backend tests in test_iter36_article_roles.py, all 25/25 PASS. DB state: local category has allowed_roles=['admin','user'], world has ['admin'], zkusenosti has ['user','specialist','admin','lawyer']. Article categories default to ['admin','lawyer']. Admin token can be obtained via POST /api/auth/login with test1@bloom.cz/test123. For playwright: set token via localStorage and use add_init_script to set sessionStorage bloom_intro_shown=1 to skip intro. Community password: Transfortrans."
+}

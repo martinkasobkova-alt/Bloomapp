@@ -1,0 +1,51 @@
+{
+  "summary": "Iteration 38 - Global Search (7 types) + Social Media Links in Profile. All 24 backend tests PASS. All frontend tests PASS. Both features fully functional end-to-end.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_tested": {
+    "search_icon_opens_panel": "PASS - data-testid='search-icon-btn' opens search-panel on click",
+    "search_panel_closes_on_click_away": "PASS - Panel closes when clicking outside (mousedown handler working)",
+    "search_input_navigates_to_search_page": "PASS - Enter key navigates to /search?q=<query>",
+    "search_page_shows_7_sections": "PASS - All 7 sections shown for q=test: posts, users, specialists, services, articles, questions, reviews",
+    "search_api_returns_7_keys": "PASS - GET /api/search returns all 7 keys in results + totals",
+    "search_specialists_only_approved": "PASS - Only approved/status-empty specialists returned",
+    "search_no_mongo_id": "PASS - No _id in questions or reviews results",
+    "autocomplete_shows_7_types": "PASS - All 7 type labels shown: Příspěvek, Uživatel, Odborník, Nabídka, Právní poradna, Otázka komunity, Recenze odborníka",
+    "autocomplete_view_all_btn": "PASS - 'Zobrazit všechny výsledky' button found in autocomplete",
+    "profile_has_social_inputs": "PASS - Instagram, Facebook, LinkedIn inputs present in profile form",
+    "profile_social_links_save": "PASS - Social links saved with 'Profil aktualizován!' toast",
+    "profile_social_links_persist": "PASS - Links persist after page reload",
+    "public_profile_shows_social_icons": "PASS - Instagram, Facebook, LinkedIn icons shown on public profile when set",
+    "social_icons_target_blank": "PASS - All social icons have target='_blank' + rel='noopener noreferrer'",
+    "social_icons_hidden_when_empty": "PASS - Social icons NOT shown when links are empty"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter38_search_social.py",
+    "/app/test_reports/pytest/iter38_search_social.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SearchPage.js catch {} silently swallows errors - no error state shown to user if API fails (minor, same as iter 37)",
+    "SearchPage.js: 'Nic jsme nenašli pro:' subtitle flicker during loading (same minor UX issue from iter 37, still not fixed)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter38_search_social.py"
+  ],
+  "success_rate": {
+    "backend": "100% (24/24)",
+    "frontend": "100% (all features verified)"
+  },
+  "test_credentials": "test1@bloom.cz / test123",
+  "seed_data_creation": "Temporarily set social links on test1@bloom.cz; cleared back to empty at test end",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Global Search (7 types: posts/users/specialists/services/articles/questions/reviews) + Social Media Links (instagram/facebook/linkedin) both fully implemented and tested. Backend: GET /api/search returns 7 grouped result keys + totals. PUT /api/auth/profile accepts social links. GET /api/users/{id}/public-profile returns social links. Frontend: nav search icon toggles dropdown, autocomplete shows all 7 categories, /search page shows grouped results, profile form has social link inputs, public profile shows icons with target=_blank only when set.",
+  "rca_of_issue": "No bugs found. All features work as specified."
+}

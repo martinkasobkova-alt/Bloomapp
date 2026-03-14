@@ -1,0 +1,79 @@
+{
+  "summary": "Full e2e testing of Bloom 10-issue batch. All 43 backend tests pass (100%). All P0/P1 frontend features verified. Fixed 2 bugs: (1) always_rated=False bug in /users/:userId/public-profile due to wrong field names, (2) duplicate 'Ostatní' option in SupportPage edit dialog.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/questions/{id}/vote",
+        "issue": "Endpoint not implemented - returns 404. Frontend calls it via handleVote in QuestionsPage. vote_count field also missing from QuestionResponse model.",
+        "priority": "MEDIUM (pre-existing, not in this batch)"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "SupportPage - Kategorie select in create/edit dialog",
+        "issue": "Duplicate 'Ostatní' option shown when DB already has service type with id='other'. FIXED: Added conditional check to skip hardcoded fallback when DB has 'other' id.",
+        "selector": "[data-testid='service-type-select'] SelectContent",
+        "priority": "LOW"
+      },
+      {
+        "component": "LegalPage - Questions accordion",
+        "issue": "HTML validity warning: nested <button> inside <button>. Vote button (line 317) is inside accordion toggle button (line 310). Browsers may behave unexpectedly.",
+        "selector": "LegalPage.js line 310-317",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "UserProfilePage",
+        "issues": ["Avatar disappears briefly during re-render after rating submission - cosmetic flicker only"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_bloom_batch10.py",
+    "/app/test_reports/pytest/pytest_results_batch10.xml"
+  ],
+  "action_items": [
+    "Implement /api/questions/{id}/vote endpoint and add vote_count field to QuestionResponse model",
+    "Fix LegalPage nested button HTML validity issue: wrap vote action differently (e.g., use div instead of outer button for accordion or inner button for vote)"
+  ],
+  "critical_code_review_comments": [
+    "BUG FIXED by T1: server.py public-profile endpoint used wrong field names (rater_id/rated_user_id) when querying user_ratings collection, but rate_user endpoint stores (from_user_id/to_user_id). already_rated was always False. Fixed to use correct field names.",
+    "BUG FIXED by T1: SupportPage.js edit dialog had hardcoded <SelectItem value='other'>Ostatní</SelectItem> after DB-mapped service types, causing 'OstatníOstatní' duplicate. Fixed with conditional render.",
+    "MISSING: /questions/{id}/vote endpoint is called by frontend (QuestionsPage handleVote) but does not exist in server.py (returns 404). QuestionResponse model also lacks vote_count field.",
+    "HTML_ISSUE: LegalPage.js line 310 wraps accordion card with <button className='w-full text-left'>, and inside it at line 317 there is another <button> for voting. Nested buttons are invalid HTML and may cause unpredictable click behavior."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (fixed already_rated field names: rater_id->from_user_id, rated_user_id->to_user_id)",
+    "/app/frontend/src/pages/SupportPage.js (fixed duplicate Ostatní service type option)",
+    "/app/backend/tests/test_bloom_batch10.py (new comprehensive test file)"
+  ],
+  "success_rate": {
+    "backend": "100% (43/43 tests passed)",
+    "frontend": "95% (all P0/P1 features working, minor HTML validity issue in LegalPage)"
+  },
+  "seed_data_creation": "Created TEST_ prefixed specialists (some approved for testing), test users (TEST_ui_regular_4ee12f@bloom.cz / testpass123), test articles, test service types (cleanup attempted). Admin user TestUser1's rating is now 4.7 (3).",
+  "test_credentials": {
+    "admin": "test1@bloom.cz / test123",
+    "regular_test_user": "TEST_ui_regular_4ee12f@bloom.cz / testpass123"
+  },
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 10-issue batch features tested and working. Two bugs were fixed by this agent (already_rated field names and duplicate Ostatní). The /questions/{id}/vote endpoint is still missing. LegalPage has nested button HTML issue. Admin Obsah tab service-type items don't expose data-testid for test automation (though UI works visually). The specialist filter for full category names works with case-insensitive regex. SupportPage post_type filter tabs (Vše/Nabídky/Poptávky) work. /reset-password public route renders correctly with bad token showing error toast.",
+  "rca_of_issues": {
+    "already_rated_bug": {
+      "root_cause": "server.py /users/{user_id}/public-profile endpoint queried db.user_ratings with {'rater_id': ..., 'rated_user_id': ...} but the rate_user endpoint saves documents with field names {'from_user_id': ..., 'to_user_id': ...}. The find_one returned None every time, making already_rated always False.",
+      "reproduction": "1. Rate a user. 2. View their public profile. 3. already_rated shows False, allowing duplicate ratings.",
+      "mitigation": "Fixed field names in the find_one query to match the stored document structure."
+    },
+    "duplicate_ostatni_bug": {
+      "root_cause": "SupportPage.js edit dialog had both the DB-mapped service types loop AND a hardcoded <SelectItem value='other'>Ostatní</SelectItem>. The DB already has id='other' name='Ostatní', so it appeared twice.",
+      "reproduction": "Open create service dialog and see Kategorie select showing 'OstatníOstatní'.",
+      "mitigation": "Added conditional: {!serviceTypes.some(t => t.id === 'other') && <SelectItem value='other'>Ostatní</SelectItem>}"
+    }
+  }
+}

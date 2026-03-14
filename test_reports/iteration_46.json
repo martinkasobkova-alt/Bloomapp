@@ -1,0 +1,44 @@
+{
+  "summary": "Tested two UI layout fixes on Bloom platform (Czech): (1) Messages page layout change from min-h-screen to calc(100dvh-60px) flex container, (2) Decorative dot (section-marker) added to 'Zprávy' and 'Můj profil' headings. All 7 required checks passed on both mobile (390x844) and desktop (1280x800).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_46.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "MessagesPage.js L201: style='height: calc(-60px + 100dvh)' — React renders calc(100dvh - 60px) as calc(-60px + 100dvh), both are equivalent. Correct.",
+    "MessagesPage.js L206-207: h1 contains <span class='section-marker' style='background: #8A7CFF'/> — 10x10 purple dot visible before 'Zprávy'.",
+    "MessagesPage.js L210: grid div has classes 'grid md:grid-cols-3 gap-4 flex-1 min-h-0' with no inline height style — correctly fills remaining space.",
+    "ProfilePage.js L50-51: h1 contains <span class='section-marker' style='background: #8A7CFF'/> — 10x10 purple dot visible before 'Můj profil'."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A",
+    "frontend": "100% (7/7)"
+  },
+  "test_credentials": "test1@bloom.cz / test123",
+  "seed_data_creation": "One test message sent during chat functionality test ('Test msg mobile') in M._S._(Marťa) conversation.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All layout fixes verified in iteration_46. Messages page uses calc(100dvh-60px) flex container (not min-h-screen). Grid uses flex-1 min-h-0 (no inline style). Both pages (/messages and /profile) show purple 10x10 section-marker dot before h1 title. Chat send functionality works on mobile (Enter key). Login: use page.type() not page.fill() and keyboard.press('Enter') to submit login form.",
+  "detailed_results": {
+    "T1a_calc_100dvh_minus_60px": "PASS - style='height: calc(-60px + 100dvh)' (equivalent) found on messages-page",
+    "T1b_no_min_h_screen": "PASS - min-h-screen class absent from outer wrapper",
+    "T1c_flex_col_pt4": "PASS - flex flex-col pt-4 classes present",
+    "T2a_grid_flex1": "PASS - grid has flex-1 class",
+    "T2b_grid_min_h0": "PASS - grid has min-h-0 class",
+    "T2c_no_fixed_height_style": "PASS - no inline height style on grid",
+    "T3_section_marker_zpravu": "PASS - section-marker span (10x10, bg rgb(138,124,255)) visible before 'Zprávy'",
+    "T4_footer_not_visible_mobile": "PASS - footer at y=876 (viewport=844), not visible without scrolling",
+    "T5_desktop_layout": "PASS - page_height=740px, viewport=800px (correct: 800-60=740), footer at y=832 (not visible)",
+    "T6_chat_functionality": "PASS - conversation opens, messages visible, send works, input cleared",
+    "T7_section_marker_muj_profil": "PASS - section-marker span (10x10, bg rgb(138,124,255)) visible before 'Můj profil'",
+    "T8_chat_send_mobile": "PASS - message count 9->10, input cleared after send"
+  }
+}

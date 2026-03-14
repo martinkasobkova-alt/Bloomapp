@@ -1,0 +1,53 @@
+{
+  "summary": "P1 feature testing complete. All 10 test scenarios verified: mobile UI simplification (SupportPage + NewsPage), Aktuality YouTube/Vimeo iframe embeds, inline media in article body, backend POST /api/news with video_url, admin panel, desktop SupportPage, profile photo gallery, and 'Moje' button with expired services.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "SupportPage mobile (375px)",
+        "issues": [
+          "In the 'Nabídky' (offers) view, the 'Hledám' (need) tag has 'hidden sm:inline-flex' class so it's hidden on mobile. Only 'Nabízím' (offer) tag is visible on mobile. This appears intentional for info-density reduction, but may reduce context for the viewer. If the requirement is 'only offer/need tags visible', the 'Hledám' tag could also be shown (without the hidden class)."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_17.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SupportPage.js line 292: 'Hledám' tag in offers view has 'hidden sm:inline-flex' — on mobile only the 'Nabízím' tag is shown. Consider if 'Hledám' tag should also be visible on mobile for better context. This is a minor design decision, not a bug.",
+    "NewsPage.js renderContent helper works correctly but is verbose — consider extracting into a shared utility if re-used across components.",
+    "Both NewsPage.js and SupportPage.js are within 300 lines — good size for maintainability."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (POST /api/news with YouTube URL returns 200)",
+    "frontend": "100% (all 10 P1 test scenarios passed)"
+  },
+  "test_credentials": {
+    "admin": {"email": "test1@bloom.cz", "password": "test123"},
+    "community_password": "Transfortrans"
+  },
+  "seed_data_creation": "Created test article 'TEST P1 - YouTube Video Test' via admin panel. Article contains video_url=https://www.youtube.com/watch?v=dQw4w9WgXcQ and inline content with YouTube URL and image URL. Kept in DB for manual verification.",
+  "feature_test_results": {
+    "mobile_support_page_375px": "PASS - Description hidden (display:none), Location hidden (display:none), Offer tag visible. Note: 'Hledám' tag also hidden on mobile in offers view (hidden sm:inline-flex).",
+    "mobile_news_page_375px": "PASS - Non-featured thumbnails have 'hidden md:block' class and are invisible at 375px. Compact card layout active.",
+    "youtube_iframe_in_video_url": "PASS - article detail shows YouTube iframe (src=https://www.youtube.com/embed/dQw4w9WgXcQ), no raw <video> tag",
+    "inline_youtube_url_in_content": "PASS - YouTube URL on its own line in article body renders as iframe embed",
+    "inline_image_url_in_content": "PASS - .jpg URL on its own line in article body renders as <img> tag",
+    "backend_post_news_youtube": "PASS - POST /api/news returns 200 with video_url field preserved",
+    "admin_panel_loads": "PASS - Admin panel accessible at /admin with full user/article management",
+    "support_page_desktop_1920px": "PASS - 22 service cards visible, descriptions visible, all filters working",
+    "profile_photo_gallery": "PASS - 'Galerie fotek' section visible on user profile (/users/:id) with privacy toggle and add photo button",
+    "moje_button_shows_expired": "PASS - 'Moje (9)' button shows 9 services including expired ones with amber 'EXPIROVÁNO' badge"
+  },
+  "retest_needed": false,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "P1 features all working. Key implementations: (1) renderVideo() in NewsPage.js correctly handles YouTube/Vimeo URLs as iframes vs raw <video> for direct files. (2) renderContent() auto-detects image URLs (.jpg/.png etc) and YouTube/Vimeo URLs on their own lines and renders appropriate media. (3) SupportPage mobile uses 'hidden sm:block' for description and 'hidden sm:flex' for location. NewsPage non-featured thumbnails use 'hidden md:block'. Test article 'TEST P1 - YouTube Video Test' exists in DB with full inline media content. Admin user profile: /users/664b4ff1-1f1f-413b-ac27-8aa9abecb8b4."
+}

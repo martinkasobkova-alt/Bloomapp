@@ -1,0 +1,68 @@
+{
+  "summary": "Tested MIME type codec suffix fix for voice message upload. Backend: 17/17 tests pass. The root cause bug (audio/webm;codecs=opus returning 400) is fully fixed. Backend now strips codec suffix with .split(';')[0].strip().lower() before checking allowed_types. Frontend code verified: stopRecording strips codec suffix before File creation, no explicit Content-Type header on axios upload, error toast shows detailed backend message. Frontend UI: all chat elements present, audio player found in chat, 2-row layout confirmed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_mime_codec_fix.py",
+    "/app/test_reports/pytest/iter49_mime_fix.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Fix verified: backend/routes/messages.py line 54 ct = (file.content_type or '').split(';')[0].strip().lower() correctly strips codec suffix before allowed_types check",
+    "Fix verified: frontend stopRecording rawMime.split(';')[0].trim() on recorder.mimeType before creating File and Blob",
+    "Fix verified: frontend stopRecording axios.post(..., formData) - no explicit Content-Type header, lets axios/browser set multipart boundary",
+    "Fix verified: frontend handleFileUpload axios.post(..., formData) - no explicit Content-Type header",
+    "Fix verified: frontend stopRecording catch block uses err?.response?.data?.detail || err?.message for detailed error toast",
+    "Error response detail now includes actual stripped MIME type for debugging (e.g. 'Nepodporovaný formát text/plain')"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_mime_codec_fix.py"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17)",
+    "frontend": "100% - all UI elements verified, code structure correct"
+  },
+  "test_credentials": "test1@bloom.cz / test123",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Voice message MIME codec suffix fix is complete and verified. Backend /api/messages/upload-media now handles: audio/webm;codecs=opus, audio/mp4;codecs=mp4a.40.2, audio/ogg;codecs=opus and all other codec-suffixed MIME types. Frontend stopRecording strips suffix before File creation. Playwright browser login via UI click was not working (session not persisting after click), but localStorage token injection worked fine - use that approach for future tests. Login credentials: test1@bloom.cz / test123.",
+  "detailed_results": {
+    "T1_audio_webm_codec_opus_200": "PASS - THE KEY BUG FIX",
+    "T2_audio_webm_codec_returns_audio_media_type": "PASS",
+    "T3_audio_webm_codec_returns_valid_url": "PASS",
+    "T4_audio_webm_clean_mime_200": "PASS",
+    "T5_audio_mp4_codec_suffix_safari_200": "PASS",
+    "T6_audio_mp4_short_codec_200": "PASS",
+    "T7_audio_ogg_200": "PASS",
+    "T8_audio_ogg_codec_suffix_200": "PASS",
+    "T9_audio_mpeg_200": "PASS",
+    "T10_text_plain_400": "PASS - correctly rejected",
+    "T11_text_html_400": "PASS - correctly rejected",
+    "T12_application_json_400": "PASS - correctly rejected",
+    "T13_unauthenticated_401_403": "PASS - returns 403 (FastAPI HTTPBearer default)",
+    "T14_image_jpeg_200_regression": "PASS",
+    "T15_image_jpeg_media_type_regression": "PASS",
+    "T16_image_png_200_regression": "PASS",
+    "T17_error_includes_mime_type": "PASS",
+    "FE1_voice_record_btn_found": "PASS",
+    "FE2_image_upload_btn_found": "PASS",
+    "FE3_video_upload_btn_found": "PASS",
+    "FE4_message_input_found": "PASS",
+    "FE5_send_btn_found": "PASS",
+    "FE6_emoji_btn_found": "PASS",
+    "FE7_audio_player_in_chat": "PASS - 1 audio message visible",
+    "FE8_stopRecording_strip_codec_suffix": "PASS - rawMime.split(';')[0].trim() verified in code",
+    "FE9_no_content_type_header_stopRecording": "PASS - axios.post(url, formData) no explicit Content-Type",
+    "FE10_no_content_type_header_handleFileUpload": "PASS - axios.post(url, formData) no explicit Content-Type",
+    "FE11_error_toast_detailed_message": "PASS - err?.response?.data?.detail || err?.message used"
+  },
+  "rca_of_issue": "ROOT CAUSE: Chrome MediaRecorder.mimeType returns 'audio/webm;codecs=opus' (with codec suffix). Backend was doing exact match against allowed_types set which only contained 'audio/webm' (no codec suffix). The MIME string 'audio/webm;codecs=opus' was NOT in the allowed_types set → 400 error. FIX (backend): ct = (file.content_type or '').split(';')[0].strip().lower() strips everything after ';' before the allowed_types check. FIX (frontend): const mimeType = rawMime.split(';')[0].trim() strips codec suffix from recorder.mimeType before creating File/Blob, ensuring the File object has clean MIME type. Also removed explicit Content-Type header from axios multipart uploads so browser/axios can set correct multipart/form-data boundary."
+}

@@ -1,0 +1,68 @@
+{
+  "summary": "Iteration 27 - P0 fixes testing complete. All critical features verified: location filters CZ/WORLD across SpecialistsPage/SupportPage/NearbyPage, admin settings propagation via AppSettingsContext, text settings overwrite, featured items reorder with up/down arrows, homepage no 'Kde chces zacit?', profile page country toggle, registration form CZ/WORLD toggle. Backend: 26/26 tests passed. Frontend: all 10 feature scenarios verified.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "feature_test_results": {
+    "specialists_cz_world_toggle": "PASS - CZ/WORLD toggle buttons present (data-testid=country-filter-CZ/WORLD), WORLD activates and shows world specialists, region filter updates accordingly",
+    "support_page_location_filter": "PASS - Location filter dropdown present, Create dialog has CZ/WORLD toggle (data-testid=form-country-CZ/WORLD), toggling WORLD activates correctly",
+    "nearby_page_cz_world_toggle": "PASS - CZ/WORLD toggle present (data-testid=nearby-country-CZ/WORLD), WORLD activates and location select updates",
+    "admin_section_settings_propagation": "PASS - Edit sections button works, saving title 'TEST_Odborníci_Iter27' shows on SpecialistsPage immediately via AppSettingsContext.refresh()",
+    "admin_marker_colors_propagation": "PASS - Color inputs appear (7 color pickers), saving specialist color #FF5500 shows as orange on section marker (rgb(255, 85, 0)) on Specialists page",
+    "admin_text_settings_overwrite": "PASS - 'O projektu' text editable, V1 save works, V2 overwrites V1 correctly, value persists after reload",
+    "admin_featured_items_reorder": "PASS - 2 specialists added as featured, ArrowUp/ArrowDown buttons visible, clicking move-down swaps 'TEST Dr. Jana Nováková' and 'Test Dokto submitted' order, new order reflected on homepage 'Doporučujeme' section",
+    "homepage_no_kde_chces_zacit": "PASS - Homepage does not contain 'Kde chces zacit?' heading, hero section is compact",
+    "homepage_featured_section_visible": "PASS - After adding 2 featured specialists, 'Doporučujeme' section appeared on homepage showing them in the reordered sequence",
+    "profile_country_toggle": "PASS - CZ/WORLD toggle present on Profile (data-testid=profile-country-CZ/WORLD), CZ active by default, both toggles clickable and activate correctly",
+    "registration_cz_world_toggle": "PASS - Registration form has CZ/WORLD toggle (data-testid=reg-country-CZ/WORLD), 'Česká republika' and 'Svět' labels, WORLD activates on click",
+    "featured_items_id_field": "PASS - /api/featured-items returns id field on each item (required for reorder API call)",
+    "featured_items_reorder_api": "PASS - PUT /api/admin/featured-items/reorder with item_ids array works, orders updated correctly",
+    "text_settings_overwrite_api": "PASS - PUT /api/admin/settings/texts with same key twice correctly overwrites value",
+    "locations_country_field": "PASS - /api/locations returns country field (CZ or WORLD) on each item, filter by country=CZ and country=WORLD works"
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_bloom_iteration27.py",
+    "/app/test_reports/pytest/pytest_results_iter27.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "ProfilePage useEffect for profileCountry only triggers when allLocations loads (not when location changes) - correct implementation, auto-detects from saved location on mount",
+    "AdminPage.js is very large (1800+ lines) - recommend splitting into sub-components for maintainability",
+    "handleMoveFeatured uses filter+sort on featuredItems array which is correct; the id field in GET /api/featured-items response enables the reorder API to work",
+    "SectionHeader.jsx reads from AppSettingsContext (markerColors + sections) and fallbacks to props - correct and clean",
+    "AppSettingsContext.refresh() is called after admin saves (marker colors, section settings) - this correctly triggers context re-load and UI updates without page refresh"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_bloom_iteration27.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (26/26 tests passed)",
+    "frontend": "100% (all 10 P0 feature scenarios verified)"
+  },
+
+  "test_credentials": {
+    "admin": {"email": "test1@bloom.cz", "password": "test123"},
+    "community_password": "Transfortrans"
+  },
+
+  "seed_data_creation": "Added and removed 2 test featured specialists (Test Dokto submitted, TEST Dr. Jana Nováková) during reorder testing. Temporarily changed about_text to 'TEST_About_V2_Iter27' during text settings test - restored to empty string. Temporarily changed specialists section title to 'TEST_Odborníci_Iter27' - restored to 'Trans-friendly odborníci'. Temporarily changed specialists marker color to #FF5500 - restored to #8A7CFF.",
+
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  
+  "context_for_next_testing_agent": "Iteration 27 verified all P0 fixes: (1) Location filter CZ/WORLD works on SpecialistsPage, SupportPage, NearbyPage - all have country toggle buttons with correct data-testid attributes and the region/location dropdowns update when toggled; (2) Admin marker colors save + AppSettingsContext.refresh() propagates immediately to UI (section-marker style updates); (3) Admin section settings (title/subtitle) save + context.refresh() propagates immediately; (4) Admin text settings support overwrite - PUT twice with same key correctly updates value; (5) Featured items reorder: up/down ArrowUp/ArrowDown buttons work, PUT /api/admin/featured-items/reorder with [id2, id1] swaps order, homepage Doporučujeme shows new order; (6) Profile page has CZ/WORLD toggle (profileCountry state), auto-detects from user's saved location via useEffect when allLocations loads; (7) Registration form has reg-country-CZ/reg-country-WORLD toggle. All 26 backend tests and 10 frontend scenarios PASS. Test file: /app/backend/tests/test_bloom_iteration27.py"
+}

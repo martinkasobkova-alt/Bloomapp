@@ -1,0 +1,19 @@
+{
+  "short_name": "Bloom",
+  "name": "Bloom – komunita pro trans lidi",
+  "description": "Bezpečný prostor pro trans komunitu v České republice",
+  "icons": [
+    { "src": "/icons/favicon-32x32.png", "type": "image/png", "sizes": "32x32" },
+    { "src": "/icons/android-chrome-192x192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/icons/android-chrome-512x512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" },
+    { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#8A7CFF",
+  "background_color": "#FCFBFF",
+  "orientation": "portrait",
+  "categories": ["social", "lifestyle"],
+  "prefer_related_applications": false
+}

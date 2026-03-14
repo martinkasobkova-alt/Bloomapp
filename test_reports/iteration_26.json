@@ -1,0 +1,74 @@
+{
+  "summary": "Iteration 26 - Batch 4 testing complete. Backend: 20/20 tests passed. Frontend: All 20 UI scenarios verified via Playwright. All new admin-driven features (locations with CZ/WORLD, section settings, featured items) working correctly. SpecialistsPage and SupportPage fully dynamic. Footer consolidated. RichTextEditor working with HTML rendering. Section markers are circles. AppSettingsContext loads from API on start.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "feature_test_results": {
+    "GET_locations_with_country_field": "PASS - /api/locations returns list with 'country' field (CZ or WORLD) on each item",
+    "POST_admin_locations_cz": "PASS - POST /api/admin/locations?country=CZ creates location with country=CZ",
+    "POST_admin_locations_world": "PASS - POST /api/admin/locations?country=WORLD creates location with country=WORLD",
+    "POST_admin_locations_default_cz": "PASS - POST without country param defaults to CZ",
+    "PUT_admin_locations_country": "PASS - PUT /api/admin/locations/{id} can update country field",
+    "GET_locations_filter_by_country": "PASS - /api/locations?country=CZ and ?country=WORLD filter correctly",
+    "GET_settings_sections_6_keys": "PASS - /api/settings/sections returns 6 keys: specialists, legal, news, community, support, nearby",
+    "section_settings_title_subtitle_color": "PASS - Each section has title/subtitle/color fields",
+    "PUT_admin_settings_sections": "PASS - PUT persists to DB; GET reflects updated values",
+    "GET_featured_items_empty": "PASS - /api/featured-items returns empty list when nothing pinned",
+    "POST_admin_featured_items_specialist": "PASS - Can pin specialist; appears in GET /api/featured-items",
+    "DELETE_admin_featured_items": "PASS - DELETE unpins item; no longer appears in GET",
+    "POST_admin_featured_items_news": "PASS - Can pin news article; appears in GET",
+    "featured_items_max_3": "PASS - Returns 400 when trying to pin 4th item of same type",
+    "GET_admin_specialist_categories": "PASS - Returns dynamic list of categories from DB with id/name",
+    "GET_settings_marker_colors": "PASS - Returns 7 valid hex color keys",
+    "footer_3_links": "PASS - Footer has exactly 3 nav links: O projektu, Zásady komunity, Kontakt",
+    "footer_nahlasit_problem_pill": "PASS - 'Nahlásit problém' button has rounded-full class (pill styling)",
+    "specialists_categories_dynamic": "PASS - SpecialistsPage shows 6 buttons loaded from /api/admin/specialist-categories (not hardcoded)",
+    "specialists_cz_world_toggle": "PASS - CZ/WORLD toggle buttons present (data-testid=country-filter-CZ/WORLD)",
+    "specialists_region_filter_api": "PASS - Region filter dropdown present (uses czLocations from useLocations hook)",
+    "section_marker_circle": "PASS - .section-marker computed styles: width=10px, height=10px, border-radius=50%",
+    "support_dialog_cz_world_toggle": "PASS - New offer dialog has CZ/WORLD toggle (data-testid=form-country-CZ/WORLD)",
+    "support_location_filter_api": "PASS - Location filter dropdown uses allLocations from useLocations hook",
+    "admin_obsah_location_country_selector": "PASS - Lokality card has country dropdown (Česká republika/Svět) with ČR badge on each location",
+    "admin_obsah_section_settings": "PASS - Section settings card with Edit button; shows 6 sections (specialists/legal/news/support/nearby/community) after clicking edit",
+    "admin_obsah_featured_items_panel": "PASS - Featured items card shows 7 specialists + 10 news with pin/unpin toggle buttons",
+    "rich_text_editor_toolbar": "PASS - RichTextEditor shows Bold(B)/Italic(I)/S/M/L buttons with data-testid attrs",
+    "news_html_rendering": "PASS - Bold text typed in editor generates <b> tags; article view renders HTML with dangerouslySetInnerHTML",
+    "app_settings_context_loads": "PASS - AppSettingsContext loads markerColors from /api/settings/marker-colors and sections from /api/settings/sections on app start",
+    "homepage_dynamic_section_titles": "PASS - HomePage uses sections.community.title, sections.news.title etc from AppSettingsContext",
+    "homepage_featured_section_conditional": "PASS - Featured section (data-testid=featured-section) only renders when featuredItems.length > 0",
+    "unread_poll_15s": "PASS - Layout.js setInterval(fetchUnread, 15000) confirmed in source code"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_bloom_iteration26.py",
+    "/app/test_reports/pytest/pytest_results_iter26.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend test had shallow copy bug (dict(current) vs deepcopy) causing section title test to not restore properly - FIXED in test file",
+    "AdminPage.js is now very long (1700+ lines) - recommend splitting into sub-components (ObsahTab, SectionSettingsPanel, FeaturedItemsPanel)",
+    "RichTextEditor uses deprecated execCommand('bold') API - may have future browser compatibility issues, but works in all current browsers",
+    "useLocations hook has correct fallback (FALLBACK_CZ/WORLD/ALL) for when API is unavailable - good defensive pattern",
+    "SupportPage allLocOpts includes 'all' for filter but formLocations filters by formCountry - correct separation"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_bloom_iteration26.py"
+  ],
+  "success_rate": {
+    "backend": "100% (20/20 tests passed)",
+    "frontend": "100% (all 20 feature scenarios verified via Playwright)"
+  },
+  "test_credentials": {
+    "admin": {"email": "test1@bloom.cz", "password": "test123"},
+    "community_password": "Transfortrans"
+  },
+  "seed_data_creation": "Created and deleted TEST_RichHTML_Iter26 news article during HTML rendering test. Created and deleted TEST_CZ_Location_Iter26, TEST_WORLD_Location_Iter26, TEST_Default_Location_Iter26, TEST_Update_Location_Iter26 locations during backend tests.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iteration 26 verified all 20 Batch 4 features: (1) Locations have CZ/WORLD country field - GET /api/locations returns country, POST/PUT respect country param; (2) /api/settings/sections returns 6 sections with title/subtitle/color - PUT updates, GET reflects; (3) Featured items CRUD: GET /api/featured-items, POST /api/admin/featured-items, DELETE /api/admin/featured-items/{type}/{id} - all working, max 3 per type enforced; (4) Admin Obsah tab: location CZ/WORLD selector, section settings panel (6 sections), featured items panel (all specialists+news listed with toggle buttons); (5) SpecialistsPage: dynamic categories from API, CZ/WORLD toggle, region filter from API; (6) SupportPage: new offer dialog CZ/WORLD toggle, location filter from API; (7) Footer: exactly 3 links + rounded-full pill button; (8) RichTextEditor: B/I/S/M/L toolbar, HTML in DB, article renders dangerouslySetInnerHTML; (9) Section markers: .section-marker CSS is 10x10px circle (border-radius: 50%); (10) AppSettingsContext: loads markerColors+sections from API on startup, applies CSS vars. Test file: /app/backend/tests/test_bloom_iteration26.py"
+}

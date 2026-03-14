@@ -1,0 +1,86 @@
+{
+  "summary": "Section Settings CMS feature testing (iteration 33). All 8/8 frontend test cases PASS. All 13/13 backend tests PASS. Key features verified: (1) admin descriptions REPLACE (not append) default text - legal/news pages show titles ONCE only, (2) navigation labels come from admin DB settings, (3) visibility toggle works end-to-end — hiding nearby removes it from nav, re-enabling restores it.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_tested": {
+    "1_legal_page_title_no_duplicate": {
+      "status": "PASS",
+      "details": "Legal page shows 'Právní poradna nový svět' exactly ONCE in page content (nav bar occurrence is separate, expected). Old hardcoded default 'Informace a podpora pro trans komunitu' NOT present."
+    },
+    "2_news_page_title_no_duplicate": {
+      "status": "PASS",
+      "details": "News page shows 'Aktuality testuju' exactly ONCE. SectionHeader subtitle 'Novinky ze světa trans komunity' appears once (from admin subtitle). No hardcoded duplicate description below SectionHeader."
+    },
+    "3_nav_admin_titles": {
+      "status": "PASS",
+      "details": "Navigation shows admin titles: nav-legal='Právní poradna nový svět', nav-news='Aktuality testuju'. Both confirmed via data-testid selectors."
+    },
+    "4_admin_section_settings_card": {
+      "status": "PASS",
+      "details": "Admin → Content tab → section-settings-card found. 'Upravit' (edit-sections-btn) opens edit mode with Switch toggles for all 6 sections: specialists, legal, news, support, nearby, community. All section-visible-* testids confirmed."
+    },
+    "5_visibility_toggle_nearby_off": {
+      "status": "PASS",
+      "details": "Toggled nearby Switch from checked→unchecked, saved. nav-nearby REMOVED from navigation immediately after save."
+    },
+    "6_visibility_toggle_nearby_restore": {
+      "status": "PASS",
+      "details": "Re-enabled nearby Switch from unchecked→checked, saved. nav-nearby REAPPEARED in navigation. Toast 'Nastavení sekcí uloženo' confirmed save success."
+    },
+    "7_homepage_feature_cards_admin_titles": {
+      "status": "PASS",
+      "details": "Homepage feature cards show: support='Vzájemná podpora', specialists='Trans-friendly odborníci', legal='Právní poradna nový svět' (admin title!), nearby='V mém okolí'. All 4 visible when all sections visible."
+    },
+    "8_specialists_section_header": {
+      "status": "PASS",
+      "details": "Specialists page h1='Trans-friendly odborníci' (default, no admin override). Subtitle shown from context."
+    },
+    "9_api_sections_visible_true": {
+      "status": "PASS",
+      "details": "GET /api/settings/sections returns all 6 sections with visible:true (verified via backend test). After restore, all sections back to visible:true."
+    }
+  },
+  "backend_test_coverage": {
+    "TestSectionSettingsGet": "8/8 PASS - 200 status, all 6 keys, visible flag on all, all visible true, title/subtitle present, admin-overridden titles in legal/news",
+    "TestSectionSettingsUpdate": "5/5 PASS - requires auth, visibility toggle persists, title update persists, response has sections/message, deep merge preserves defaults"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_section_settings_iter33.py",
+    "/app/test_reports/pytest/iter33_sections.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SectionHeader.jsx correctly reads title/subtitle from sections context (admin-editable), falls back to props if not set",
+    "LegalPage.js: No hardcoded duplicate description — SectionHeader is the only heading/description element. Verified clean.",
+    "NewsPage.js: No hardcoded duplicate description — only SectionHeader renders title and subtitle. Verified clean.",
+    "Navigation.js: Properly reads from sections[key].title and filters by sections[key].visible !== false",
+    "AppSettingsContext.js deep merge correctly: DEFAULT_SECTIONS provides defaults, DB values override per-key",
+    "SectionSettingsCard.js: Switch component uses data-testid='section-visible-{key}' — confirmed working",
+    "backend settings.py: GET /api/settings/sections does per-key deep merge, visible:True default preserved",
+    "Minor: HomePage.js Community section heading uses sections?.community?.title but 'Komunita' is not in DB (shows hardcoded 'Komunita'). This is acceptable as community doesn't have a separate CMS-controlled feature card."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_section_settings_iter33.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13)",
+    "frontend": "100% (9/9 features verified)"
+  },
+  "test_credentials": {
+    "email": "test1@bloom.cz",
+    "password": "test123",
+    "role": "admin"
+  },
+  "seed_data_creation": "None. nearby visibility was toggled OFF and then restored to ON during test.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Section Settings CMS fully verified. Key data in DB: legal.title='Právní poradna nový svět', news.title='Aktuality testuju'. All sections visible:true restored after testing. Navigation labels come from admin settings. Visibility toggle works end-to-end. No regressions found vs iteration 32.",
+  "rca_of_issues": "N/A - All features working correctly. Previous concern about duplicate titles was from document.body.innerText including nav bar text. Actual page content (data-testid=legal-page/news-page) shows each title exactly once."
+}

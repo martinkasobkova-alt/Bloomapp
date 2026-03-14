@@ -1,0 +1,135 @@
+{
+  "summary": "Phase 3 Community Features Testing Complete. Backend: 29/29 tests passed. Frontend: All Phase 3 features verified via Playwright. One critical bug found: photo serving endpoint requires auth but is used as img src (photos don't render). All other features working correctly.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "GET /api/photos/{photo_id}",
+        "issue": "Endpoint named 'serve_photo_public' but has `Depends(get_current_user)` - requires JWT auth. Used in frontend as <img src> which cannot send auth headers. Photos return 403 for browser img tags. Fix: remove `current_user: dict = Depends(get_current_user)` dependency from this endpoint.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "UserProfilePage gallery",
+        "issue": "Photos uploaded to user profile don't render in the browser - show alt text only. Root cause: /api/photos/{photo_id} requires auth but <img src> can't send Bearer tokens. Admin profile shows 'Profile pho' alt text instead of actual photo.",
+        "selector": "img[src*='/api/photos/']",
+        "priority": "CRITICAL"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Gallery photo rendering",
+        "issue": "Photos return 403 without auth. Backend fix needed (remove auth from serve_photo_public endpoint).",
+        "affected_selectors": ["[data-testid^='photo-']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "features_tested": {
+    "gallery_settings_btn_owner_only": {
+      "status": "PASS",
+      "details": "gallery-settings-btn visible on own profile, NOT visible on other user's profile"
+    },
+    "gallery_settings_panel": {
+      "status": "PASS",
+      "details": "gallery-settings-panel shows with gallery-public-btn and gallery-protected-btn after clicking settings btn"
+    },
+    "gallery_protected_password_input": {
+      "status": "PASS",
+      "details": "gallery-password-input appears when 'protected' button clicked"
+    },
+    "save_gallery_settings": {
+      "status": "PASS",
+      "details": "save-gallery-settings-btn saves privacy. 'Nastavení galerie uloženo' toast confirmed. 'Chráněno heslem' badge appears on gallery heading"
+    },
+    "protected_gallery_locked_panel": {
+      "status": "PASS",
+      "details": "gallery-locked panel shows for other users on protected gallery. gallery-unlock-input and gallery-unlock-btn present"
+    },
+    "gallery_unlock_btn": {
+      "status": "PASS",
+      "details": "Correct password (Transfortrans) unlocks gallery. 'Galerie odemčena' toast shown. gallery-locked panel disappears"
+    },
+    "tag_photo_button": {
+      "status": "PASS",
+      "details": "tag-photo-{id} button visible on hover for owner (uses opacity-0 group-hover:opacity-100 CSS)"
+    },
+    "tag_search_panel": {
+      "status": "PASS",
+      "details": "tag-search-panel appears after clicking tag button. Search input functional"
+    },
+    "nearby_page": {
+      "status": "PASS",
+      "details": "nearby-page element found. 'Členové komunity v okolí: Praha' section visible with 6 nearby-user-* cards. Each card is a link to /users/{id}"
+    },
+    "nearby_users_api": {
+      "status": "PASS",
+      "details": "GET /api/users/nearby?location=Praha returns 8 users (confirmed via backend test). Response has id, username fields. Excludes current user"
+    },
+    "news_share_story_btn": {
+      "status": "PASS",
+      "details": "'Sdílet příběh' button appears for authenticated regular user ONLY on zkusenosti tab. Hidden on 'all' tab. Admin sees 'Nová aktualita' on all tabs"
+    },
+    "news_video_url_field": {
+      "status": "PASS",
+      "details": "news-video-input (URL videa field) present in both admin and regular user create forms"
+    },
+    "community_story_badge": {
+      "status": "PASS",
+      "details": "'Osobní příběh' badge visible on community stories by regular users. 'Video' badge also shows for stories with video_url"
+    },
+    "admin_can_create_any_category": {
+      "status": "PASS",
+      "details": "Admin form shows 'Kategorie' selector. Backend test confirmed admin can POST to world/local/tips/events categories"
+    },
+    "regular_user_blocked_non_zkusenosti": {
+      "status": "PASS",
+      "details": "Backend returns 403 for regular user attempting to create world/local categories. Frontend hides category selector for non-admin users"
+    },
+    "community_story_is_community_story_true": {
+      "status": "PASS",
+      "details": "Regular user zkusenosti post has is_community_story=True. Admin zkusenosti post has is_community_story=False"
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase3_community.py",
+    "/app/test_reports/pytest/pytest_phase3_community.xml"
+  ],
+  "action_items": [
+    "CRITICAL: Fix /api/photos/{photo_id} - remove `Depends(get_current_user)` from `serve_photo_public` endpoint in server.py (line 1784). Photos are used as <img src> and cannot carry Bearer tokens. The endpoint is named 'public' but has auth requirement.",
+    "MINOR: fetchGalleryInfo in UserProfilePage.js uses `isSelf` closure variable - during auth context initialization it may be false, causing gallery to briefly appear locked for owner. Consider passing isSelf as parameter or await auth context."
+  ],
+  "critical_code_review_comments": [
+    "serve_photo_public endpoint (line 1783-1790 server.py) has `Depends(get_current_user)` which blocks browser img tag rendering. This is the most critical bug.",
+    "UserProfilePage.js: fetchGalleryInfo closure captures `isSelf` at time of useEffect registration, not at call time. If auth loads after component mount, isSelf may be stale (false). Fix by including `isSelf` in useEffect dependency or refactor.",
+    "DialogContent missing aria-describedby in NewsPage.js and UserProfilePage.js - accessibility warning (minor).",
+    "server.py is ~1910 lines - approaching size limit for maintainability. Consider splitting into separate route files."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (29/29)",
+    "frontend": "93% (14/15 - photo rendering is broken due to backend auth issue)"
+  },
+  "test_credentials": {
+    "admin_email": "test1@bloom.cz",
+    "admin_password": "test123",
+    "admin_id": "664b4ff1-1f1f-413b-ac27-8aa9abecb8b4",
+    "regular_user_email": "storywriter@bloom.cz",
+    "regular_user_password": "test123",
+    "regular_user_id": "28ad1e3f-23db-4cb5-b906-f28bc064b7f4",
+    "gallery_password": "Transfortrans"
+  },
+  "seed_data_creation": "Created and deleted backend test data (community stories with TEST_ prefix). Uploaded and deleted 1 test photo (3a840a3a-781e-4f0e-a143-2d6b40dc2964). Admin gallery reset to public after testing.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Phase 3 community features mostly working. Critical bug: /api/photos/{photo_id} endpoint requires auth, photos won't render in browser (403). Fix: remove Depends(get_current_user) from serve_photo_public. After fix, verify photo gallery renders actual images. All other Phase 3 features verified: gallery privacy settings, gallery locking/unlocking, photo tagging, nearby users (6 cards for Praha), community stories (is_community_story:true, Osobní příběh badge), news category restrictions.",
+  "rca_of_issue": {
+    "bug": "Photo gallery images don't render (403 Forbidden)",
+    "root_cause": "GET /api/photos/{photo_id} endpoint in server.py line 1784 has `current_user: dict = Depends(get_current_user)` dependency. When React frontend uses this URL in <img src=\"/api/photos/ID\">, the browser makes a plain HTTP GET request without Authorization headers. FastAPI returns 403 because JWT token is missing.",
+    "reproduction": "1. Upload any photo to a user profile. 2. Navigate to that profile. 3. Photo shows alt text instead of image. 4. Browser console shows 403 error for /api/photos/ URL.",
+    "mitigation": "Remove `current_user: dict = Depends(get_current_user)` from serve_photo_public function. Photos are stored in MongoDB by photo ID, privacy is enforced at the /users/{id}/photos endpoint level, not at the individual photo serving level."
+  }
+}

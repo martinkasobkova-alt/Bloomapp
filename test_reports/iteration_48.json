@@ -1,0 +1,62 @@
+{
+  "summary": "Tested 3 new features: (1) Voice message recording UI + audio MIME upload, (2) Chat input 2-row layout redesign, (3) Admin 'Doporučujeme' (featured) marker color. Found and fixed 1 backend bug: GET /api/settings/marker-colors was not merging DB value with DEFAULT_MARKER_COLORS, causing 'featured' key to be missing when DB had older 9-key snapshot. 16/16 backend tests pass after fix. All 12 frontend feature checks pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_voice_marker_features.py",
+    "/app/test_reports/pytest/iter48_voice_marker.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FIXED: GET /api/settings/marker-colors in backend/routes/settings.py was returning stored DB value directly without merging with DEFAULT_MARKER_COLORS. Fix: `return {**DEFAULT_MARKER_COLORS, **setting['value']}` — same merge pattern frontend AppSettingsContext and useAdminData already do. This ensures newly added keys ('featured') are always returned even when DB has older snapshots.",
+    "All voice recording refs/handlers correctly set up in MessagesPage.js (mediaRecorderRef, audioChunksRef, recordingTimerRef)",
+    "stopRecording uploads to /api/messages/upload-media and sends with media_type='audio' which triggers audio player renderer",
+    "renderMediaMsg correctly handles media_type='audio' with data-testid='audio-player' and token-authenticated src URL",
+    "2-row form layout: Row 1 = action icons div (border-b separator), Row 2 = flex items-end gap-2 (textarea + send). Clean separation confirmed"
+  ],
+  "updated_files": [
+    "/app/backend/routes/settings.py",
+    "/app/backend/tests/test_voice_marker_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 after fix — was 81% before fix)",
+    "frontend": "100% (12/12)"
+  },
+  "test_credentials": "test1@bloom.cz / test123",
+  "seed_data_creation": "Sent one audio message to M._S_(Marta) conversation for audio player UI test. Can be ignored.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Marker color system now has 10 fields: legal, news, community, support, specialists, nearby, messages, profile, featured, default. Backend GET /api/settings/marker-colors now merges defaults with DB so new keys are always present. Voice recording button (voice-record-btn) is in Row 1 of chat form, visible on both desktop and mobile. Audio player renders with data-testid='audio-player' for audio messages. MediaRecorder API available in browser. Admin /admin > Obsah tab > Barvy nadpisových markerů shows 10 fields including 'Doporučujeme'. Login: test1@bloom.cz / test123.",
+  "rca_of_issue": "ROOT CAUSE: GET /api/settings/marker-colors returned stored DB value directly without merging with DEFAULT_MARKER_COLORS. When admin previously saved 9 color keys (before 'featured' was added), that old 9-key dict was stored in MongoDB. On GET, the endpoint returned the stored dict as-is, bypassing DEFAULT_MARKER_COLORS defaults. FIX: Changed `return setting['value']` to `return {**DEFAULT_MARKER_COLORS, **setting['value']}` so any new default keys are always present in the response. Reproduction: Reset DB or have an older marker_colors doc → GET returns 9 keys without 'featured'. After fix: GET always returns all 10 default keys merged with any stored overrides.",
+  "detailed_results": {
+    "T1_backend_get_marker_colors_200": "PASS",
+    "T2_backend_featured_key_present": "PASS (after fix)",
+    "T3_backend_10_keys_total": "PASS (after fix)",
+    "T4_backend_upload_audio_webm_200": "PASS",
+    "T5_backend_upload_returns_audio_media_type": "PASS",
+    "T6_backend_upload_returns_valid_url": "PASS",
+    "T7_backend_audio_mp4_accepted": "PASS",
+    "T8_backend_audio_ogg_accepted": "PASS",
+    "T9_backend_unsupported_type_400": "PASS",
+    "T10_backend_auth_required": "PASS",
+    "T11_frontend_voice_record_btn_visible": "PASS - Row 1 of 2-row layout",
+    "T12_frontend_all_row1_icons_visible": "PASS - emoji, image, video, mic",
+    "T13_frontend_2row_layout_structure": "PASS - flex-col form, Row 2 has flex items-end gap-2",
+    "T14_frontend_textarea_flex1_minw0": "PASS - flex-1 min-w-0 on textarea",
+    "T15_frontend_mobile_textarea_width": "PASS - 88% of row width on 390px viewport",
+    "T16_frontend_mobile_voice_btn_visible": "PASS",
+    "T17_frontend_text_send_works": "PASS - message sent, input cleared",
+    "T18_frontend_audio_player_renders": "PASS - data-testid='audio-player' found with controls",
+    "T19_admin_marker_color_featured_field": "PASS - marker-color-featured visible, label='Doporučujeme'",
+    "T20_admin_10_color_fields": "PASS - 10 fields total",
+    "T21_admin_color_picker_featured": "PASS - value=#F5A9B8",
+    "T22_homepage_featured_marker_color": "PASS - mc('featured') = rgb(245,169,184) = #F5A9B8"
+  }
+}
