@@ -225,7 +225,7 @@ const LegalPage = () => {
 
           {loading ? <div className="flex justify-center py-8"><div className="spinner" /></div> :
             articles.length === 0 ? (
-              <Card className="bg-white border-border/50"><CardContent className="p-8 text-center">
+              <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-8 text-center">
                 <BookOpen className="w-8 h-8 text-bloom-sub/30 mx-auto mb-2" />
                 <p className="text-sm text-bloom-sub">Žádné články v této kategorii</p>
               </CardContent></Card>

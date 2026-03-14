@@ -65,7 +65,7 @@ export const Layout = ({ children }) => {
         </div>
       )}
       <Navigation />
-      <main className={`flex-1 page-transition ${isAuthenticated ? "pt-[48px] md:pt-[91px]" : ""}`}>
+      <main className={`flex-1 page-transition ${isAuthenticated ? "pt-[56px] md:pt-[91px]" : ""}`}>
         {showVerificationBanner && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2" data-testid="verification-banner">
             <div className="bg-amber-50 border border-amber-200 rounded-xl shadow-sm px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

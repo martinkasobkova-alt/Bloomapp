@@ -343,7 +343,7 @@ const SupportPage = () => {
         {loading ? (
           <div className="flex justify-center py-12"><div className="spinner" /></div>
         ) : displayed.length === 0 ? (
-          <Card className="bg-white border-border/50"><CardContent className="p-12 text-center">
+          <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-12 text-center">
             <Heart className="w-10 h-10 text-bloom-pride-pink/40 mx-auto mb-3" />
             <h3 className="font-serif text-lg font-semibold text-bloom-text mb-1">
               {showMyServices ? 'Nemáte žádné příspěvky' : 'Žádné příspěvky nenalezeny'}

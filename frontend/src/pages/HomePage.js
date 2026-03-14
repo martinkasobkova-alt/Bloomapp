@@ -105,15 +105,17 @@ const HomePage = () => {
       <div className="pride-bar" />
 
       {/* Quote + community stats */}
-      <section className="py-5 sm:py-7">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          {/* Quote */}
-          <blockquote>
+      <section className="homepage-quote-section py-5 sm:py-7">
+        <div className="homepage-quote-inner max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          {/* Quote - natural wrap on mobile, line break on desktop */}
+          <blockquote className="homepage-quote">
             <p className="text-sm sm:text-base text-bloom-sub leading-relaxed italic">
-              <span className="text-bloom-violet font-serif text-2xl sm:text-3xl mr-1 inline-block" style={{ verticalAlign: 'top', transform: 'translateY(-0.2em)' }}>&ldquo;</span>
-              Bloom je prostor, kde každý může být sám sebou — kde můžete sdílet
-              <br />
-              své zkušenosti, ptát se a pomáhat ostatním. Bez odsuzování a bez předsudků.<span className="text-bloom-violet font-serif text-2xl sm:text-3xl ml-1 inline-block" style={{ verticalAlign: 'top', transform: 'translateY(-0.2em)' }}>&rdquo;</span>
+              <span className="text-bloom-violet font-serif text-2xl sm:text-3xl mr-1 inline-block align-top" style={{ transform: 'translateY(-0.2em)' }}>&ldquo;</span>
+              <span className="inline md:hidden">Bloom je prostor, kde každý může být sám sebou — kde můžete sdílet své zkušenosti, ptát se a pomáhat ostatním. Bez odsuzování a bez předsudků.</span>
+              <span className="hidden md:inline">Bloom je prostor, kde každý může být sám sebou — kde můžete sdílet</span>
+              <br className="hidden md:block" />
+              <span className="hidden md:inline">své zkušenosti, ptát se a pomáhat ostatním. Bez odsuzování a bez předsudků.</span>
+              <span className="text-bloom-violet font-serif text-2xl sm:text-3xl ml-1 inline-block align-top" style={{ transform: 'translateY(-0.2em)' }}>&rdquo;</span>
             </p>
           </blockquote>
 
@@ -363,7 +365,7 @@ const HomePage = () => {
             </Link>
           </div>
           {news.length === 0 ? (
-            <Card className="bg-white border-border/50">
+            <Card className="empty-state-card bg-white border-border/50">
               <CardContent className="p-12 text-center">
                 <Newspaper className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3" />
                 <p className="text-bloom-sub">Zatím nejsou žádné aktuality</p>

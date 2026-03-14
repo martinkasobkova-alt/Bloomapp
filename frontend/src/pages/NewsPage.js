@@ -476,7 +476,7 @@ const NewsPage = () => {
         )}
 
         {loading?<div className="flex justify-center py-12"><div className="spinner"/></div>:filtered.length===0?(
-          <Card className="bg-white border-border/50"><CardContent className="p-12 text-center"><Newspaper className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><h3 className="font-serif text-lg font-semibold text-bloom-text mb-1">Žádné aktuality</h3><p className="text-sm text-bloom-sub">V této kategorii zatím nejsou žádné aktuality</p></CardContent></Card>
+          <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-12 text-center"><Newspaper className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><h3 className="font-serif text-lg font-semibold text-bloom-text mb-1">Žádné aktuality</h3><p className="text-sm text-bloom-sub">V této kategorii zatím nejsou žádné aktuality</p></CardContent></Card>
         ):(
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {filtered.map((n,i)=>(

@@ -89,7 +89,7 @@ const NearbyPage = () => {
         </Card>
 
         {!location ? (
-          <Card className="bg-white border-border/50"><CardContent className="p-12 text-center">
+          <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-12 text-center">
             <MapPin className="w-12 h-12 text-bloom-violet/30 mx-auto mb-3"/>
             <h3 className="font-serif text-lg font-semibold text-bloom-text mb-1">Nastavte si svou lokalitu</h3>
             <p className="text-sm text-bloom-sub">Vyberte lokalitu výše, abyste viděli nabídky a odborníky ve svém okolí</p>
@@ -105,7 +105,7 @@ const NearbyPage = () => {
                 </h2>
               </div>
               {nearbyUsers.length === 0 ? (
-                <Card className="bg-white border-border/50"><CardContent className="p-8 text-center"><Users className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><p className="text-sm text-bloom-sub">V této lokalitě zatím nejsou žádní členové komunity</p></CardContent></Card>
+                <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-8 text-center"><Users className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><p className="text-sm text-bloom-sub">V této lokalitě zatím nejsou žádní členové komunity</p></CardContent></Card>
               ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {nearbyUsers.map(u => (
@@ -135,7 +135,7 @@ const NearbyPage = () => {
                 <Link to="/support" className="text-sm text-bloom-violet hover:underline">Zobrazit vše</Link>
               </div>
               {nearbyServices.length===0?(
-                <Card className="bg-white border-border/50"><CardContent className="p-8 text-center"><Users className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><p className="text-sm text-bloom-sub">V této lokalitě zatím nejsou žádné nabídky</p><Link to="/support"><Button className="mt-3 bg-bloom-mint text-white">Vytvořit nabídku</Button></Link></CardContent></Card>
+                <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-8 text-center"><Users className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><p className="text-sm text-bloom-sub">V této lokalitě zatím nejsou žádné nabídky</p><Link to="/support"><Button className="mt-3 bg-bloom-mint text-white">Vytvořit nabídku</Button></Link></CardContent></Card>
               ):(
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {nearbyServices.map(s=>(
@@ -160,7 +160,7 @@ const NearbyPage = () => {
                 <Link to="/specialists" className="text-sm text-bloom-violet hover:underline">Zobrazit vše</Link>
               </div>
               {nearbySpecialists.length===0?(
-                <Card className="bg-white border-border/50"><CardContent className="p-8 text-center"><Stethoscope className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><p className="text-sm text-bloom-sub">V této lokalitě zatím nejsou registrovaní odborníci</p></CardContent></Card>
+                <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-8 text-center"><Stethoscope className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3"/><p className="text-sm text-bloom-sub">V této lokalitě zatím nejsou registrovaní odborníci</p></CardContent></Card>
               ):(
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {nearbySpecialists.map(s=>(

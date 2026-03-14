@@ -218,4 +218,49 @@ main .page-title {
     height: 36px !important;
     min-height: 36px !important;
   }
+  /* Section header breathing room - not glued to navbar */
+  .section-header {
+    margin-top: 12px !important;
+    padding-top: 6px;
+  }
+  .section-header h1 {
+    margin-top: 0;
+  }
+  .section-header-subtitle {
+    line-height: 1.25;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+  }
+  /* Content wrapper + filter/chip wrapping */
+  .section-filters {
+    margin-bottom: 12px !important;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  /* Empty state cards - more compact on mobile */
+  .empty-state-card > div {
+    padding: 1.25rem 1rem !important;
+  }
+  .empty-state-card svg.mx-auto {
+    margin-bottom: 0.5rem !important;
+  }
+  /* Homepage quote section - reduce vertical gaps */
+  .homepage-quote-section {
+    padding-top: 0.75rem !important;
+    padding-bottom: 1rem !important;
+  }
+  .homepage-quote-inner > * + * {
+    margin-top: 1rem !important;
+  }
+  /* Quote text - compact paragraph, no huge line gaps */
+  .homepage-quote p {
+    white-space: normal;
+    line-height: 1.4;
+    margin: 0;
+  }
 }

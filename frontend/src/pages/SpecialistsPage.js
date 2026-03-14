@@ -264,7 +264,7 @@ const SpecialistsPage = () => {
           <div className="lg:col-span-2 space-y-3">
             {loading ? <div className="flex justify-center py-12"><div className="spinner" /></div> :
               sortedSpecialists.length === 0 ? (
-                <Card className="bg-white border-border/50"><CardContent className="p-8 text-center"><Stethoscope className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3" /><p className="text-bloom-sub">Žádní odborníci nenalezeni</p><p className="text-xs text-bloom-sub mt-1">Zkuste změnit filtry</p></CardContent></Card>
+                <Card className="empty-state-card bg-white border-border/50"><CardContent className="p-8 text-center"><Stethoscope className="w-10 h-10 text-bloom-sub/30 mx-auto mb-3" /><p className="text-bloom-sub">Žádní odborníci nenalezeni</p><p className="text-xs text-bloom-sub mt-1">Zkuste změnit filtry</p></CardContent></Card>
               ) : sortedSpecialists.map(s => (
                 <Card key={s.id} className={`bg-white border-border/50 cursor-pointer transition-all ${selected?.id === s.id ? 'ring-2 ring-bloom-violet' : 'hover:shadow-md'}`} onClick={() => handleSelect(s)} data-testid={`specialist-card-${s.id}`}>
                   <CardContent className="p-4">
