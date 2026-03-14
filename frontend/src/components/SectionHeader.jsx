@@ -24,12 +24,12 @@ export const SectionHeader = ({
   const subtitle = cfg.subtitle || defaultSubtitle;
 
   return (
-    <div className={`mt-10 mb-2 text-center ${className}`}>
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-bloom-text/80 mb-2 flex items-center justify-center">
-        <span className="section-marker" style={{ background: color }} />
-        {title}
+    <div className={`mt-3 md:mt-2 mb-3 md:mb-4 text-center ${className}`}>
+      <h1 className="font-serif text-xl leading-tight sm:text-3xl md:text-4xl md:leading-normal font-semibold text-bloom-text/80 mb-2 flex items-center justify-center gap-2">
+        <span className="section-marker shrink-0" style={{ background: color }} />
+        <span className="break-words text-center">{title}</span>
       </h1>
-      {subtitle && <p className="text-bloom-sub">{subtitle}</p>}
+      {subtitle && <p className="text-bloom-sub text-sm md:text-base">{subtitle}</p>}
     </div>
   );
 };

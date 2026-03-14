@@ -179,6 +179,38 @@ const SupportPage = () => {
           })}
         </div>
 
+        {/* Mobile-only filters - location and category */}
+        <div className="flex md:hidden gap-2 mb-4">
+          <div className="flex rounded-lg border border-border overflow-hidden flex-shrink-0">
+            {[{ v: 'CZ', l: 'ČR' }, { v: 'WORLD', l: 'Svět' }].map(x => (
+              <button
+                key={x.v}
+                type="button"
+                onClick={() => { setFilterCountry(x.v); setLocationFilter('all'); }}
+                className={`px-2 py-1.5 text-xs font-medium transition-colors ${filterCountry === x.v ? 'bg-bloom-violet text-white' : 'bg-white text-bloom-sub hover:bg-muted'}`}
+                data-testid={`filter-country-mobile-${x.v}`}
+              >
+                {x.l}
+              </button>
+            ))}
+          </div>
+          <Select value={locationFilter} onValueChange={setLocationFilter}>
+            <SelectTrigger className="flex-1 min-w-0" data-testid="location-filter-mobile">
+              <MapPin className="w-3.5 h-3.5 mr-1 text-bloom-violet shrink-0" /><SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {locationOpts.map(o => <SelectItem key={o.id || o.name} value={o.id === 'all' ? 'all' : o.name}>{o.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="flex-1 min-w-0" data-testid="type-filter-mobile"><Filter className="w-3.5 h-3.5 mr-1 text-bloom-mint shrink-0" /><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Všechny typy</SelectItem>
+              {serviceTypes.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <form onSubmit={handleSearch} className="flex-1 flex gap-2">
             <div className="relative flex-1">

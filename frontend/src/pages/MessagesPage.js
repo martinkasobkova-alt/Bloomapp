@@ -168,8 +168,11 @@ const MessagesPage = () => {
     if (selectedUser) {
       prevMsgCountRef.current = 0; // reset so next message load scrolls
       isNearBottomRef.current = true;
+      // Ensure scroll after messages render (handles initial load and fast subsequent loads)
+      const t = setTimeout(() => scrollToBottom(false), 100);
+      return () => clearTimeout(t);
     }
-  }, [selectedUser]);
+  }, [selectedUser, scrollToBottom]);
 
   // Track mobile keyboard via visualViewport
   useEffect(() => {
@@ -386,18 +389,22 @@ const MessagesPage = () => {
     return null;
   };
 
+  const isMobileChatView = !!selectedUser;
   return (
     <div className="flex flex-col h-full overflow-hidden" data-testid="messages-page">
       {lightboxSrc && <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
-      <div className="flex-1 min-h-0 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col overflow-hidden">
-        <SectionHeader
-          sectionKey="messages"
-          defaultTitle="Zprávy"
-          defaultSubtitle=""
-          defaultColor={markerColors?.messages || '#8A7CFF'}
-        />
-        <div className="pride-bar mb-2 flex-shrink-0" />
-        <div className="grid md:grid-cols-3 md:grid-rows-1 gap-3 flex-1 min-h-0">
+      <div className={`flex-1 min-h-0 max-w-5xl mx-auto w-full flex flex-col overflow-hidden ${isMobileChatView ? 'px-0 md:px-4 lg:px-8' : 'px-4 sm:px-6 lg:px-8'}`}>
+        {/* Header + pride-bar: hidden on mobile when in conversation detail; shown on desktop always */}
+        <div className={`flex-shrink-0 ${isMobileChatView ? 'hidden md:block' : ''}`}>
+          <SectionHeader
+            sectionKey="messages"
+            defaultTitle="Zprávy"
+            defaultSubtitle=""
+            defaultColor={markerColors?.messages || '#8A7CFF'}
+          />
+          <div className="pride-bar mb-2" />
+        </div>
+        <div className="grid md:grid-cols-3 md:grid-rows-1 gap-0 md:gap-3 flex-1 min-h-0">
           {/* Sidebar - hidden on mobile when chat is open */}
           <div className={`md:col-span-1 flex flex-col bg-white rounded-xl border border-border/50 min-h-0 overflow-hidden ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-3 border-b border-border">
@@ -446,8 +453,8 @@ const MessagesPage = () => {
             </div>
           </div>
 
-          {/* Chat */}
-          <div className={`md:col-span-2 flex flex-col h-full min-h-0 bg-white rounded-xl border border-border/50 overflow-hidden ${!selectedUser ? 'hidden md:flex' : 'flex'}`}>
+          {/* Chat - fullscreen on mobile when open */}
+          <div className={`md:col-span-2 flex flex-col h-full min-h-0 bg-white overflow-hidden ${!selectedUser ? 'hidden md:flex' : 'flex'} ${isMobileChatView ? 'rounded-none border-0 md:rounded-xl md:border md:border-border/50' : 'rounded-xl border border-border/50'}`}>
             {selectedUser ? (
               <>
                 <div className="p-3 border-b border-border flex items-center gap-3 flex-shrink-0">
