@@ -164,6 +164,25 @@ body.messages-active footer {
   display: none !important;
 }
 
+/* Mobile chat layout - no gap above input bar, safe area for iOS */
+@media (max-width: 768px) {
+  body.messages-active .messages-page--chat-open .chat-panel {
+    flex: 1;
+    min-height: 0;
+  }
+  body.messages-active .messages-page--chat-open .chat-messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.messages-active .messages-page--chat-open .chat-input-bar {
+    flex-shrink: 0;
+    background: white;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
+
 /* Page content spacing — consistent breathing room below navbar */
 .main-content,
 .page-content,

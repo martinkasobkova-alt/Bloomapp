@@ -109,22 +109,36 @@ const MessagesPage = () => {
   useEffect(() => {
     document.body.classList.add('messages-active');
     const main = document.querySelector('main');
-    if (main) {
-      main.style.height = 'calc(100dvh - 60px)';
-      main.style.maxHeight = 'calc(100dvh - 60px)';
+    const applyStyles = () => {
+      if (!main) return;
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      if (isMobile && selectedUser) {
+        main.style.height = '100dvh';
+        main.style.maxHeight = '100dvh';
+        main.style.paddingTop = '59px';
+      } else {
+        main.style.height = 'calc(100dvh - 60px)';
+        main.style.maxHeight = 'calc(100dvh - 60px)';
+        main.style.paddingTop = '';
+      }
       main.style.overflow = 'hidden';
       main.style.flex = 'none';
-    }
+    };
+    applyStyles();
+    const mql = window.matchMedia('(max-width: 768px)');
+    mql.addEventListener('change', applyStyles);
     return () => {
       document.body.classList.remove('messages-active');
+      mql.removeEventListener('change', applyStyles);
       if (main) {
         main.style.height = '';
         main.style.maxHeight = '';
         main.style.overflow = '';
         main.style.flex = '';
+        main.style.paddingTop = '';
       }
     };
-  }, []);
+  }, [selectedUser]);
 
   useEffect(() => {
     if (selectedUser) {
@@ -391,7 +405,7 @@ const MessagesPage = () => {
 
   const isMobileChatView = !!selectedUser;
   return (
-    <div className="flex flex-col h-full overflow-hidden" data-testid="messages-page">
+    <div className={`flex flex-col h-full overflow-hidden ${isMobileChatView ? 'messages-page--chat-open' : ''}`} data-testid="messages-page">
       {lightboxSrc && <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
       <div className={`flex-1 min-h-0 max-w-5xl mx-auto w-full flex flex-col overflow-hidden ${isMobileChatView ? 'px-0 md:px-4 lg:px-8' : 'px-4 sm:px-6 lg:px-8'}`}>
         {/* Header + pride-bar: hidden on mobile when in conversation detail; shown on desktop always */}
@@ -454,7 +468,7 @@ const MessagesPage = () => {
           </div>
 
           {/* Chat - fullscreen on mobile when open */}
-          <div className={`md:col-span-2 flex flex-col h-full min-h-0 bg-white overflow-hidden ${!selectedUser ? 'hidden md:flex' : 'flex'} ${isMobileChatView ? 'rounded-none border-0 md:rounded-xl md:border md:border-border/50' : 'rounded-xl border border-border/50'}`}>
+          <div className={`md:col-span-2 flex flex-col h-full min-h-0 bg-white overflow-hidden ${!selectedUser ? 'hidden md:flex' : 'flex'} ${isMobileChatView ? 'rounded-none border-0 md:rounded-xl md:border md:border-border/50 chat-panel' : 'rounded-xl border border-border/50'}`}>
             {selectedUser ? (
               <>
                 <div className="p-3 border-b border-border flex items-center gap-3 flex-shrink-0">
@@ -466,7 +480,7 @@ const MessagesPage = () => {
                     <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
                   </button>
                 </div>
-                <div ref={messagesContainerRef} onScroll={handleMessagesScroll} className="flex-1 overflow-y-auto p-4 space-y-3 overscroll-contain" style={{ minHeight: 0 }}>
+                <div ref={messagesContainerRef} onScroll={handleMessagesScroll} className="flex-1 overflow-y-auto p-4 space-y-3 overscroll-contain chat-messages" style={{ minHeight: 0 }}>
                   {messages.map(m => (
                     <div key={m.id} className={`flex ${m.from_user_id===user?.id?'justify-end':'justify-start'} group/message`} data-testid={`message-${m.id}`}>
                       <div className={`relative max-w-[75%] px-3 py-2 text-sm ${m.from_user_id===user?.id?'message-sent':'message-received'}${m.media_url ? ' message-has-media' : ''}`}>
@@ -486,7 +500,7 @@ const MessagesPage = () => {
                     </div>
                   ))}
                 </div>
-                <form onSubmit={sendMessage} className="px-3 pt-2 pb-2 border-t border-border flex-shrink-0">
+                <form onSubmit={sendMessage} className="px-3 pt-2 pb-2 border-t border-border flex-shrink-0 chat-input-bar">
                   {/* Hidden file inputs */}
                   <input type="file" ref={imageInputRef} accept="image/jpeg,image/png,image/gif" className="hidden" onChange={e => handleFileUpload(e, 'image')} />
                   <input type="file" ref={videoInputRef} accept="video/mp4,video/webm" className="hidden" onChange={e => handleFileUpload(e, 'video')} />
