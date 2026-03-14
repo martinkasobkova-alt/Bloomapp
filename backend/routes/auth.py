@@ -23,13 +23,14 @@ from utils import bloom_email_html
 router = APIRouter()
 
 
-async def _verify_turnstile(token: str | None, remote_ip: str) -> bool:
-    """Verify Cloudflare Turnstile token. Returns True if valid or Turnstile disabled."""
+async def _verify_turnstile(token: str | None, remote_ip: str) -> tuple[bool, str | None]:
+    """Verify Cloudflare Turnstile token. Returns (success, user_message).
+    user_message is None on success, or a short hint when verification fails."""
     secret = os.environ.get("TURNSTILE_SECRET_KEY")
     if not secret:
-        return True  # Turnstile disabled when no secret
+        return (True, None)  # Turnstile disabled when no secret
     if not token or not token.strip():
-        return False
+        return (False, "Token nebyl odeslán.")
     try:
         async with httpx.AsyncClient() as client:
             r = await client.post(
@@ -38,9 +39,18 @@ async def _verify_turnstile(token: str | None, remote_ip: str) -> bool:
                 timeout=10.0,
             )
             data = r.json()
-            return data.get("success") is True
-    except Exception:
-        return False
+            if data.get("success") is True:
+                return (True, None)
+            error_codes = data.get("error-codes") or []
+            logger.warning(f"[Turnstile] siteverify failed: {error_codes} (hostname={data.get('hostname', '?')})")
+            if "timeout-or-duplicate" in error_codes:
+                return (False, "Ověření vypršelo. Obnovte stránku a vyplňte ověření znovu těsně před odesláním.")
+            if "invalid-input-response" in error_codes:
+                return (False, "Ověření neplatné. Pokud používáte localhost, přidejte ho v Cloudflare Turnstile → Hostname Management.")
+            return (False, "Ověření selhalo. Zkuste obnovit stránku a vyplnit formulář znovu.")
+    except Exception as e:
+        logger.exception(f"[Turnstile] siteverify error: {e}")
+        return (False, "Nelze ověřit. Zkuste to znovu později.")
 
 
 @router.post("/auth/register")
@@ -52,11 +62,10 @@ async def register(request: Request, user_data: UserCreate):
     client_ip = get_client_ip(request)
 
     # Cloudflare Turnstile verification
-    if not await _verify_turnstile(user_data.turnstile_token, client_ip):
-        raise HTTPException(
-            status_code=400,
-            detail="Ověření proti robotům selhalo. Prosím zkuste to znovu.",
-        )
+    ok, hint = await _verify_turnstile(user_data.turnstile_token, client_ip)
+    if not ok:
+        detail = f"Ověření proti robotům selhalo. {hint}" if hint else "Ověření proti robotům selhalo. Prosím zkuste to znovu."
+        raise HTTPException(status_code=400, detail=detail)
 
     entry_pw_setting = await db.app_settings.find_one({"key": "entry_password_enabled"})
     entry_pw_enabled = entry_pw_setting["value"] if entry_pw_setting else True

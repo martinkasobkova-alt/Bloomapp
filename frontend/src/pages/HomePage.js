@@ -81,7 +81,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen" data-testid="home-page">
       {/* Hero — compact */}
-      <section className="relative pt-12 pb-3 overflow-hidden">
+      <section className="relative pt-6 pb-3 overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-2">
             <div className="p-2 rounded-xl bg-white shadow-md shadow-bloom-violet/10">

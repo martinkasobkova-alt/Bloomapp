@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Bell, Mail, RefreshCw, Bug } from 'lucide-react';
+import { Bell, RefreshCw, Bug, XCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import BugReportModal from './BugReportModal';
 import { usePushNotifications } from '../hooks/usePushNotifications';
@@ -52,23 +52,6 @@ export const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-bloom-bg flex flex-col">
-      {showVerificationBanner && (
-        <div className="bg-amber-50 border-b border-amber-200 px-3 sm:px-4 py-2 sm:py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3" data-testid="verification-banner">
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-800 min-w-0">
-            <Mail className="w-4 h-4 shrink-0 text-amber-500" />
-            <span className="leading-tight">Váš e-mail není ověřen. Prosím potvrďte e-mail.</span>
-          </div>
-          <button
-            onClick={handleResendVerification}
-            disabled={resendingVerification}
-            className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors shrink-0 w-full sm:w-auto justify-center"
-            data-testid="resend-verification-btn"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${resendingVerification ? 'animate-spin' : ''}`} />
-            {resendingVerification ? 'Odesílám...' : 'Znovu odeslat'}
-          </button>
-        </div>
-      )}
       {showPushBanner && (
         <div className="bg-bloom-violet/5 border-b border-bloom-violet/15 px-3 sm:px-4 py-2 sm:py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2" data-testid="push-banner">
           <div className="flex items-center gap-2 text-xs sm:text-sm text-bloom-text">
@@ -82,7 +65,34 @@ export const Layout = ({ children }) => {
         </div>
       )}
       <Navigation />
-      <main className={`flex-1 page-transition ${isAuthenticated ? "pt-[91px]" : ""}`}>{children}</main>
+      <main className={`flex-1 page-transition ${isAuthenticated ? "pt-[91px]" : ""}`}>
+        {showVerificationBanner && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2" data-testid="verification-banner">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl shadow-sm px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-2 min-w-0">
+                <XCircle className="w-5 h-5 shrink-0 text-amber-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-bloom-text">
+                    E-mail: <span className="text-amber-600">Neověřený</span>
+                  </p>
+                  <p className="text-xs text-bloom-sub">{user?.email}</p>
+                  <p className="text-xs text-amber-700 mt-1.5">Neověření uživatelé mají omezená práva. Web mohou pouze prohlížet. Prosím ověřte svůj e-mail.</p>
+                </div>
+              </div>
+              <button
+                onClick={handleResendVerification}
+                disabled={resendingVerification}
+                className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-2 rounded-lg transition-colors shrink-0"
+                data-testid="resend-verification-btn"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${resendingVerification ? 'animate-spin' : ''}`} />
+                {resendingVerification ? 'Odesílám...' : 'Odeslat znovu'}
+              </button>
+            </div>
+          </div>
+        )}
+        {children}
+      </main>
       <footer className="border-t border-border/50 bg-white/60 py-5 px-4 sm:px-6 lg:px-8 mt-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>

@@ -76,15 +76,17 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen py-6" data-testid="profile-page">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-0 pb-6" data-testid="profile-page">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           sectionKey="profile"
           defaultTitle="Můj profil"
           defaultSubtitle="Upravte své údaje a nastavení"
           defaultColor={markerColors?.profile || '#F5A9B8'}
         />
-        <div className="pride-bar mb-6" />
+      </div>
+      <div className="pride-bar mb-2" />
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
 
         <Card className={`mb-4 ${user?.email_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`} data-testid="email-verification-status">
           <CardContent className="p-3 flex items-center justify-between gap-3">
