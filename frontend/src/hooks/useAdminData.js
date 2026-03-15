@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
@@ -108,10 +108,10 @@ export function useAdminData() {
         fetchServices(),
       ]).catch(() => {});
     }
-  }, [isAdmin]);
+  }, [isAdmin, fetchAll, fetchContent, fetchPending, fetchReports, fetchBugReports, fetchReviews, fetchServices]);
 
   // --- Data fetchers ---
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     try {
       const [u, n, s, locs, vr] = await Promise.all([
         axios.get(`${API}/admin/users`),
@@ -129,18 +129,21 @@ export function useAdminData() {
       toast.error(msg);
     }
     finally { setLoading(false); }
-  };
+  }, []);
 
-  const fetchPending = async () => {
+  const fetchPending = useCallback(async () => {
     try { const r = await axios.get(`${API}/admin/specialists/pending`); setPendingSpecialists(r.data); } catch {}
-  };
-  const fetchReviews = async () => {
+  }, []);
+  const fetchReviews = useCallback(async () => {
     try { const r = await axios.get(`${API}/admin/reviews`); setReviews(r.data); } catch {}
-  };
-  const fetchServices = async () => {
+  }, []);
+  const fetchServices = useCallback(async () => {
     try { const r = await axios.get(`${API}/admin/services`); setServices(r.data); } catch {}
-  };
-  const fetchContent = async () => {
+  }, []);
+  const fetchTextSettings = useCallback(async () => {
+    try { const r = await axios.get(`${API}/settings/texts`); setTextSettings(r.data); } catch {}
+  }, []);
+  const fetchContent = useCallback(async () => {
     try {
       const [st, loc, ac, sc, nc] = await Promise.all([
         axios.get(`${API}/service-types`),
@@ -153,10 +156,7 @@ export function useAdminData() {
       setSpecCats(sc.data); setNewsCatsApi(nc.data);
     } catch {}
     fetchTextSettings();
-  };
-  const fetchTextSettings = async () => {
-    try { const r = await axios.get(`${API}/settings/texts`); setTextSettings(r.data); } catch {}
-  };
+  }, [fetchTextSettings]);
   const fetchMarkerColors = async () => {
     try {
       const r = await axios.get(`${API}/settings/marker-colors`);
@@ -185,12 +185,12 @@ export function useAdminData() {
   const fetchContactEmail = async () => {
     try { const r = await axios.get(`${API}/settings/contact-email`); setContactEmail(r.data.email || ''); } catch {}
   };
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try { const r = await axios.get(`${API}/admin/reports`); setReports(r.data); } catch {}
-  };
-  const fetchBugReports = async () => {
+  }, []);
+  const fetchBugReports = useCallback(async () => {
     try { const r = await axios.get(`${API}/admin/bug-reports`); setBugReports(r.data); } catch {}
-  };
+  }, []);
   const fetchVerificationRequests = async () => {
     try { const r = await axios.get(`${API}/admin/verification-requests`); setVerificationRequests(r.data); } catch {}
   };
