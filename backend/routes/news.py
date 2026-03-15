@@ -57,6 +57,7 @@ async def create_news(news: NewsCreate, user: dict = Depends(require_verified_em
         "video_url": news.video_url or "",
         "thumbnail_url": news.thumbnail_url or "",
         "category": news.category,
+        "image_fit": (news.image_fit or "cover").strip() or "cover",
         "admin_id": user["id"] if not is_community else "",
         "admin_name": user["username"] if not is_community else "",
         "author_id": user["id"],
@@ -84,6 +85,10 @@ async def get_news(category: str = ""):
     if category and category != "all":
         query["category"] = category
     news_list = await db.news.find(query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    valid_fit = {"cover", "contain", "cover-top", "cover-center", "cover-bottom"}
+    for n in news_list:
+        if "image_fit" not in n or n["image_fit"] not in valid_fit:
+            n["image_fit"] = "cover"
     return [NewsResponse(**n) for n in news_list]
 
 
@@ -136,11 +141,16 @@ async def serve_news_media(filename: str):
     return FileResponse(str(file_path))
 
 
+_VALID_IMAGE_FIT = {"cover", "contain", "cover-top", "cover-center", "cover-bottom"}
+
+
 @router.get("/news/{news_id}", response_model=NewsResponse)
 async def get_news_item(news_id: str):
     news = await db.news.find_one({"id": news_id}, {"_id": 0})
     if not news:
         raise HTTPException(status_code=404, detail="Aktualita nenalezena")
+    if "image_fit" not in news or news["image_fit"] not in _VALID_IMAGE_FIT:
+        news["image_fit"] = "cover"
     return NewsResponse(**news)
 
 
@@ -211,13 +221,20 @@ async def update_news(news_id: str, data: dict, user: dict = Depends(require_ver
         raise HTTPException(status_code=404, detail="Aktualita nenalezena")
     if user.get("role") not in ("admin", "superadmin") and news_item.get("author_id") != user["id"]:
         raise HTTPException(status_code=403, detail="Nemáte oprávnění upravit tento příspěvek")
-    allowed = {"title", "content", "category", "image_url", "video_url", "thumbnail_url"}
+    allowed = {"title", "content", "category", "image_url", "video_url", "thumbnail_url", "image_fit"}
+    valid_fit = {"cover", "contain", "cover-top", "cover-center", "cover-bottom"}
     updates = {k: v for k, v in data.items() if k in allowed}
+    if "image_fit" in updates and updates["image_fit"] not in valid_fit:
+        updates["image_fit"] = "cover"
     if "content" in updates:
         updates["content"] = sanitize_html(updates["content"] or "")
     if updates:
         await db.news.update_one({"id": news_id}, {"$set": updates})
     updated = await db.news.find_one({"id": news_id}, {"_id": 0})
+    if not updated:
+        raise HTTPException(status_code=404, detail="Aktualita nenalezena")
+    if "image_fit" not in updated or updated["image_fit"] not in valid_fit:
+        updated["image_fit"] = "cover"
     return NewsResponse(**updated)
 
 

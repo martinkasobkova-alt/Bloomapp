@@ -5,7 +5,7 @@ import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { BadgeCheck, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { AdminSortControl, DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
+import { AdminSortControl, SECTION_DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
 
 const STATUS_LABELS = { pending: 'Čeká na vyřízení', approved: 'Schváleno', reviewed: 'Zpracováno', rejected: 'Zamítnuto' };
 const ROLE_LABELS = { specialist: 'Ověřený odborník', lawyer: 'Ověřený právník' };
@@ -104,7 +104,7 @@ export function AdminVerificationTab({ requests = [], onUpdateStatus }) {
           <Clock className="w-4 h-4 text-amber-500" />
           <h3 className="font-semibold text-bloom-text text-sm">Čekající žádosti ({pending.length})</h3>
         </div>
-        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={DATE_SORT_OPTIONS} testId="verification-sort" />
+        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={SECTION_DATE_SORT_OPTIONS} testId="verification-sort" />
       </div>
       {sortedPending.length === 0 ? (
         <p className="text-sm text-bloom-sub mb-6">Žádné čekající žádosti.</p>

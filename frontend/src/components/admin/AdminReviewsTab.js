@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Card, CardContent } from '../ui/card';
 import { StarRating } from './shared';
-import { AdminSortControl, DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
+import { AdminSortControl, SECTION_DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
 
 function EditReviewForm({ review, onSave, onCancel }) {
   const [content, setContent] = useState(review.content);
@@ -57,7 +57,7 @@ export function AdminReviewsTab({ reviews, handleDeleteReview, handleUpdateRevie
   ) : (
     <div className="space-y-2">
       <div className="flex items-center justify-between mb-1">
-        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={DATE_SORT_OPTIONS} testId="reviews-sort" />
+        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={SECTION_DATE_SORT_OPTIONS} testId="reviews-sort" />
       </div>
       {sortedReviews.map(r => (
         <Card key={r.id} className="bg-white border-border/50" data-testid={`admin-review-${r.id}`}>

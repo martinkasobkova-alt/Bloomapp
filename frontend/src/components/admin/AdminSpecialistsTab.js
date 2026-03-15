@@ -9,10 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Stethoscope } from 'lucide-react';
 import { StarRating } from './shared';
-import { AdminSortControl, NAME_SORT_OPTIONS, sortByName } from './AdminSortControl';
+import { AdminSortControl, SPECIALIST_SORT_OPTIONS, sortByName, sortByDate } from './AdminSortControl';
+
+const DEFAULT_SPEC_CATEGORIES = [
+  'Psychologie, psychiatrie a sexuologie',
+  'Plastická chirurgie obličeje',
+  'Plastická chirurgie těla',
+  'Méně invazivní zákroky',
+  'Fitness, kadeřnice, kosmetiky',
+];
 
 export function AdminSpecialistsTab({
-  specialists, locations,
+  specialists, locations, specCats = [],
   showSpecialistForm, setShowSpecialistForm,
   specForm, setSpecForm,
   specLoading, handleCreateSpecialist, handleDeleteSpecialist, handleEditSpecialist,
@@ -20,7 +28,13 @@ export function AdminSpecialistsTab({
   const [editDialog, setEditDialog] = useState(false);
   const [editForm, setEditForm] = useState(null);
   const [sortOrder, setSortOrder] = useState('name-asc');
-  const sortedSpecs = useMemo(() => sortByName(specialists, sortOrder, 'name'), [specialists, sortOrder]);
+  const sortedSpecs = useMemo(() => {
+    if (sortOrder === 'name-asc' || sortOrder === 'name-desc') {
+      return sortByName(specialists, sortOrder, 'name');
+    }
+    return sortByDate(specialists, sortOrder, 'created_at');
+  }, [specialists, sortOrder]);
+  const categoryOptions = specCats.length > 0 ? specCats.map(c => ({ id: c.id, name: c.name })) : DEFAULT_SPEC_CATEGORIES.map(name => ({ id: name, name }));
 
   const openEdit = (s) => {
     setEditForm({
@@ -69,11 +83,9 @@ export function AdminSpecialistsTab({
                   <Select value={specForm.specialty} onValueChange={v => setSpecForm(p => ({ ...p, specialty: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Psychologie, psychiatrie a sexuologie">Psychologie, psychiatrie a sexuologie</SelectItem>
-                      <SelectItem value="Plastická chirurgie obličeje">Plastická chirurgie obličeje</SelectItem>
-                      <SelectItem value="Plastická chirurgie těla">Plastická chirurgie těla</SelectItem>
-                      <SelectItem value="Méně invazivní zákroky">Méně invazivní zákroky</SelectItem>
-                      <SelectItem value="Fitness, kadeřnice, kosmetiky">Fitness, kadeřnice, kosmetiky</SelectItem>
+                      {categoryOptions.map(o => (
+                        <SelectItem key={o.id} value={o.name}>{o.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -181,7 +193,7 @@ export function AdminSpecialistsTab({
       )}
 
       <div className="flex items-center justify-between mb-2">
-        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={NAME_SORT_OPTIONS} testId="specialists-sort" />
+        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={SPECIALIST_SORT_OPTIONS} testId="specialists-sort" />
       </div>
       <div className="space-y-2">
         {sortedSpecs.length === 0
@@ -237,7 +249,9 @@ export function AdminSpecialistsTab({
                   <Select value={editForm.specialty} onValueChange={v => setEditForm(p => ({ ...p, specialty: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {['Psychologie, psychiatrie a sexuologie','Plastická chirurgie obličeje','Plastická chirurgie těla','Méně invazivní zákroky','Fitness, kadeřnice, kosmetiky'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                      {categoryOptions.map(o => (
+                        <SelectItem key={o.id} value={o.name}>{o.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

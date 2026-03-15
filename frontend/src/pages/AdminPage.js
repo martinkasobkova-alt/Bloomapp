@@ -75,28 +75,43 @@ const AdminPage = () => {
 
         <Tabs defaultValue="users" className="space-y-5">
           <TabsList className="bg-white border border-border flex-wrap h-auto gap-1 p-1">
-            <TabsTrigger value="users" className="flex items-center gap-1.5 text-xs sm:text-sm"><Users className="w-3.5 h-3.5" />Uživatelé</TabsTrigger>
-            <TabsTrigger value="news" className="flex items-center gap-1.5 text-xs sm:text-sm"><Newspaper className="w-3.5 h-3.5" />Aktuality</TabsTrigger>
-            <TabsTrigger value="specialists" className="flex items-center gap-1.5 text-xs sm:text-sm"><Stethoscope className="w-3.5 h-3.5" />Odborníci</TabsTrigger>
+            <TabsTrigger value="users" className="flex items-center gap-1.5 text-xs sm:text-sm relative">
+              <Users className="w-3.5 h-3.5" />Uživatelé
+              {d.users.length > 0 && <span className="absolute -top-1 -right-1 bg-bloom-violet/90 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{d.users.length}</span>}
+            </TabsTrigger>
+            <TabsTrigger value="news" className="flex items-center gap-1.5 text-xs sm:text-sm relative">
+              <Newspaper className="w-3.5 h-3.5" />Aktuality
+              {d.news.length > 0 && <span className="absolute -top-1 -right-1 bg-bloom-violet/90 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{d.news.length}</span>}
+            </TabsTrigger>
+            <TabsTrigger value="specialists" className="flex items-center gap-1.5 text-xs sm:text-sm relative">
+              <Stethoscope className="w-3.5 h-3.5" />Odborníci
+              {d.specialists.length > 0 && <span className="absolute -top-1 -right-1 bg-bloom-violet/90 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{d.specialists.length}</span>}
+            </TabsTrigger>
             <TabsTrigger value="pending" className="flex items-center gap-1.5 text-xs sm:text-sm relative" onClick={d.fetchPending}>
               <Clock className="w-3.5 h-3.5" />Ke schválení
-              {d.pendingSpecialists.length > 0 && <span className="absolute -top-1 -right-1 bg-destructive text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">{d.pendingSpecialists.length}</span>}
+              {d.pendingSpecialists.length > 0 && <span className="absolute -top-1 -right-1 bg-destructive text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{d.pendingSpecialists.length}</span>}
             </TabsTrigger>
-            <TabsTrigger value="reviews" className="flex items-center gap-1.5 text-xs sm:text-sm" onClick={d.fetchReviews}><Star className="w-3.5 h-3.5" />Recenze</TabsTrigger>
-            <TabsTrigger value="services" className="flex items-center gap-1.5 text-xs sm:text-sm" onClick={d.fetchServices}><Briefcase className="w-3.5 h-3.5" />Nabídky</TabsTrigger>
+            <TabsTrigger value="reviews" className="flex items-center gap-1.5 text-xs sm:text-sm relative" onClick={d.fetchReviews}>
+              <Star className="w-3.5 h-3.5" />Recenze
+              {d.reviews.length > 0 && <span className="absolute -top-1 -right-1 bg-bloom-violet/90 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{d.reviews.length}</span>}
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-1.5 text-xs sm:text-sm relative" onClick={d.fetchServices}>
+              <Briefcase className="w-3.5 h-3.5" />Nabídky
+              {d.services.length > 0 && <span className="absolute -top-1 -right-1 bg-bloom-violet/90 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{d.services.length}</span>}
+            </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-1.5 text-xs sm:text-sm" onClick={() => { d.fetchContent(); d.fetchMarkerColors(); d.fetchSectionSettings(); d.fetchFeaturedItems(); }}><Settings className="w-3.5 h-3.5" />Obsah</TabsTrigger>
             <TabsTrigger value="reports" className="flex items-center gap-1.5 text-xs sm:text-sm relative" onClick={d.fetchReports} data-testid="reports-tab">
               <Flag className="w-3.5 h-3.5" />Nahlášení
-              {d.reports.filter(r => r.status === 'open').length > 0 && <span className="absolute -top-1 -right-1 bg-destructive text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">{d.reports.filter(r => r.status === 'open').length}</span>}
+              {d.reports.length > 0 && <span className={`absolute -top-1 -right-1 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${d.reports.filter(r => r.status === 'open').length > 0 ? 'bg-destructive' : 'bg-bloom-violet/90'}`}>{d.reports.filter(r => r.status === 'open').length || d.reports.length}</span>}
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-1.5 text-xs sm:text-sm" onClick={() => { d.fetchCommunityPassword(); d.fetchContactEmail(); d.fetchOfferExpiryDays(); }} data-testid="settings-tab"><KeyRound className="w-3.5 h-3.5" />Nastavení</TabsTrigger>
             <TabsTrigger value="bug-reports" className="flex items-center gap-1.5 text-xs sm:text-sm relative" onClick={d.fetchBugReports} data-testid="bug-reports-tab">
               <Bug className="w-3.5 h-3.5" />Bug reports
-              {d.bugReports.filter(r => r.status === 'new').length > 0 && <span className="absolute -top-1 -right-1 bg-destructive text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">{d.bugReports.filter(r => r.status === 'new').length}</span>}
+              {d.bugReports.length > 0 && <span className={`absolute -top-1 -right-1 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${d.bugReports.filter(r => r.status === 'new').length > 0 ? 'bg-destructive' : 'bg-bloom-violet/90'}`}>{d.bugReports.filter(r => r.status === 'new').length || d.bugReports.length}</span>}
             </TabsTrigger>
             <TabsTrigger value="verification" className="flex items-center gap-1.5 text-xs sm:text-sm relative" onClick={d.fetchVerificationRequests} data-testid="verification-tab-trigger">
               <BadgeCheck className="w-3.5 h-3.5" />Ověření
-              {d.verificationRequests.filter(r => r.status === 'pending').length > 0 && <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">{d.verificationRequests.filter(r => r.status === 'pending').length}</span>}
+              {d.verificationRequests.length > 0 && <span className={`absolute -top-1 -right-1 text-white text-[9px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${d.verificationRequests.filter(r => r.status === 'pending').length > 0 ? 'bg-amber-500' : 'bg-bloom-violet/90'}`}>{d.verificationRequests.filter(r => r.status === 'pending').length || d.verificationRequests.length}</span>}
             </TabsTrigger>
           </TabsList>
 
@@ -122,7 +137,7 @@ const AdminPage = () => {
 
           <TabsContent value="specialists" data-testid="specialists-tab-content">
             <AdminSpecialistsTab
-              specialists={d.specialists} locations={d.locations}
+              specialists={d.specialists} locations={d.locations} specCats={d.specCats}
               showSpecialistForm={d.showSpecialistForm} setShowSpecialistForm={d.setShowSpecialistForm}
               specForm={d.specForm} setSpecForm={d.setSpecForm}
               specLoading={d.specLoading} handleCreateSpecialist={d.handleCreateSpecialist}

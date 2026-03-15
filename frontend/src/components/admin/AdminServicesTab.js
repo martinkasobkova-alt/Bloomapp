@@ -6,7 +6,7 @@ import { Card, CardContent } from '../ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { getAvatarImage } from '../Layout';
-import { AdminSortControl, DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
+import { AdminSortControl, SECTION_DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
 
 export function AdminServicesTab({
   services, selectedService, setSelectedService,
@@ -96,7 +96,7 @@ export function AdminServicesTab({
       ) : (
         <>
         <div className="flex items-center justify-between mb-2">
-          <AdminSortControl value={sortOrder} onChange={setSortOrder} options={DATE_SORT_OPTIONS} testId="services-sort" />
+          <AdminSortControl value={sortOrder} onChange={setSortOrder} options={SECTION_DATE_SORT_OPTIONS} testId="services-sort" />
         </div>
         <div className="space-y-2">
           {sortedServices.map(s => {

@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { Plus, ArrowLeft, Calendar, Trash2, MessageCircle, Send, Pencil, Upload } from 'lucide-react';
 import { API, getMediaUrl } from '../lib/api';
+import { IMAGE_FIT_OPTIONS, getImageFitClass } from '../lib/newsImageFit';
 import { getAvatarImage } from '../components/Layout';
 import { RichTextEditor } from '../components/RichTextEditor';
 import {
@@ -46,7 +47,9 @@ const StoriesPage = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [editImageUrl, setEditImageUrl] = useState('');
+  const [editImageFit, setEditImageFit] = useState('cover');
   const [editImageFile, setEditImageFile] = useState(null);
+  const [imageFit, setImageFit] = useState('cover');
 
   const fetchStories = useCallback(async () => {
     setLoading(true);
@@ -83,9 +86,9 @@ const StoriesPage = () => {
         const r = await axios.post(`${API}/news/upload-media`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
         finalImageUrl = r.data.url;
       }
-      await axios.post(`${API}/news`, { title, content, image_url: finalImageUrl, category: 'zkusenosti' });
+      await axios.post(`${API}/news`, { title, content, image_url: finalImageUrl, category: 'zkusenosti', image_fit: imageFit });
       toast.success('Příběh sdílen!');
-      setDialogOpen(false); setTitle(''); setContent(''); setImageUrl(''); setImageFile(null);
+      setDialogOpen(false); setTitle(''); setContent(''); setImageUrl(''); setImageFit('cover'); setImageFile(null);
       await fetchStories();
     } catch (err) { toast.error(err.response?.data?.detail || 'Nepodařilo se sdílet'); }
     finally { setUploading(false); }
@@ -105,6 +108,7 @@ const StoriesPage = () => {
     setEditTitle(story.title || '');
     setEditContent(story.content || '');
     setEditImageUrl(story.image_url || '');
+    setEditImageFit(story.image_fit || 'cover');
     setEditImageFile(null);
     setEditDialogOpen(true);
   };
@@ -121,7 +125,7 @@ const StoriesPage = () => {
         finalImageUrl = r.data.url;
       }
       const updated = await axios.put(`${API}/news/${editingStory.id}`, {
-        title: editTitle, content: editContent, image_url: finalImageUrl, category: 'zkusenosti'
+        title: editTitle, content: editContent, image_url: finalImageUrl, category: 'zkusenosti', image_fit: editImageFit
       });
       toast.success('Příběh aktualizován!');
       setEditDialogOpen(false); setEditingStory(null);
@@ -164,7 +168,7 @@ const StoriesPage = () => {
           </button>
           <article className="bg-white rounded-2xl border border-border/50 overflow-hidden shadow-sm" data-testid="story-article">
             {selected.image_url && (
-              <img src={getMediaUrl(selected.image_url)} alt={selected.title} className="w-full h-56 sm:h-72 object-cover bg-muted/30" />
+              <img src={getMediaUrl(selected.image_url)} alt={selected.title} className={`w-full h-56 sm:h-72 bg-muted/30 ${getImageFitClass(selected.image_fit)}`} />
             )}
             <div className="p-6 sm:p-8">
               <div className="flex items-center gap-2 mb-3">
@@ -278,7 +282,7 @@ const StoriesPage = () => {
       </div>
 
       {/* Edit dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={open => { setEditDialogOpen(open); if (!open) { setEditingStory(null); setEditTitle(''); setEditContent(''); setEditImageUrl(''); setEditImageFile(null); } }}>
+      <Dialog open={editDialogOpen} onOpenChange={open => { setEditDialogOpen(open); if (!open) { setEditingStory(null); setEditTitle(''); setEditContent(''); setEditImageUrl(''); setEditImageFit('cover'); setEditImageFile(null); } }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-bloom-text">Upravit příběh</DialogTitle>
@@ -313,6 +317,13 @@ const StoriesPage = () => {
                 <div className="flex gap-2 items-center text-xs text-bloom-sub">
                   <span>nebo URL:</span>
                   <Input value={editImageUrl} onChange={e => { setEditImageUrl(e.target.value); setEditImageFile(null); }} placeholder="https://..." className="flex-1 h-8 text-xs" />
+                </div>
+                <div>
+                  <Label className="text-xs text-bloom-sub">Jak oříznout fotku</Label>
+                  <Select value={editImageFit} onValueChange={setEditImageFit}>
+                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -364,7 +375,7 @@ const StoriesPage = () => {
                   <div className="flex gap-4 items-start p-4">
                     {story.image_url && (
                       <img src={getMediaUrl(story.image_url)} alt={story.title}
-                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-contain bg-muted/30 shrink-0" />
+                        className={`w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-muted/30 shrink-0 ${getImageFitClass(story.image_fit)}`} />
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-1.5">
@@ -433,6 +444,13 @@ const StoriesPage = () => {
               <div className="flex gap-2 items-center text-xs text-bloom-sub">
                 <span>nebo URL:</span>
                 <Input value={imageUrl} onChange={e => { setImageUrl(e.target.value); setImageFile(null); }} placeholder="https://..." className="flex-1 h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs text-bloom-sub">Jak oříznout fotku</Label>
+                <Select value={imageFit} onValueChange={setImageFit}>
+                  <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                </Select>
               </div>
             </div>
           </div>

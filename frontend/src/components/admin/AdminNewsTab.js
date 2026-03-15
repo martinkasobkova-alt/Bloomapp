@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { RichTextEditor } from '../RichTextEditor';
-import { AdminSortControl, DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
+import { AdminSortControl, NEWS_SORT_OPTIONS, sortByName, sortByDate } from './AdminSortControl';
 import { getMediaUrl } from '../../lib/api';
+import { IMAGE_FIT_OPTIONS, getImageFitClass } from '../../lib/newsImageFit';
 
 export function AdminNewsTab({
   news, newsCatsApi,
@@ -19,12 +20,17 @@ export function AdminNewsTab({
   const [editDialog, setEditDialog] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [sortOrder, setSortOrder] = useState('date-desc');
-  const sortedNews = useMemo(() => sortByDate(news, sortOrder), [news, sortOrder]);
+  const sortedNews = useMemo(() => {
+    if (sortOrder === 'name-asc' || sortOrder === 'name-desc') {
+      return sortByName(news, sortOrder, 'title');
+    }
+    return sortByDate(news, sortOrder, 'created_at');
+  }, [news, sortOrder]);
 
   const openEdit = (n) => { setEditItem({ ...n }); setEditDialog(true); };
   const saveEdit = async (e) => {
     e.preventDefault();
-    await handleUpdateNews(editItem.id, { title: editItem.title, content: editItem.content, category: editItem.category, image_url: editItem.image_url });
+    await handleUpdateNews(editItem.id, { title: editItem.title, content: editItem.content, category: editItem.category, image_url: editItem.image_url, image_fit: editItem.image_fit || 'cover' });
     setEditDialog(false);
   };
   return (
@@ -91,6 +97,13 @@ export function AdminNewsTab({
                   placeholder="https://..."
                   data-testid="news-image-input"
                 />
+                <div>
+                  <Label className="text-xs text-bloom-sub">Jak oříznout fotku</Label>
+                  <Select value={newsForm.image_fit || 'cover'} onValueChange={v => setNewsForm(p => ({ ...p, image_fit: v }))}>
+                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="flex gap-3">
                 <Button type="submit" className="bg-bloom-violet text-white" disabled={newsLoading} data-testid="news-submit-btn">
@@ -104,7 +117,7 @@ export function AdminNewsTab({
       )}
 
       <div className="flex items-center justify-between mb-2">
-        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={DATE_SORT_OPTIONS} testId="news-sort" />
+        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={NEWS_SORT_OPTIONS} testId="news-sort" />
       </div>
       <div className="space-y-2">
         {sortedNews.length === 0
@@ -113,7 +126,7 @@ export function AdminNewsTab({
             <Card key={n.id} className="bg-white border-border/50">
               <CardContent className="p-3 flex items-start gap-3">
                 {n.image_url && (
-                  <img src={getMediaUrl(n.image_url)} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                  <img src={getMediaUrl(n.image_url)} alt="" className={`w-14 h-14 rounded-lg shrink-0 ${getImageFitClass(n.image_fit)}`} />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-bloom-text line-clamp-1">{n.title}</p>
@@ -165,6 +178,13 @@ export function AdminNewsTab({
               <div className="space-y-2">
                 <Label>URL obrázku</Label>
                 <Input value={editItem.image_url || ''} onChange={e => setEditItem(p => ({ ...p, image_url: e.target.value }))} placeholder="https://..." />
+                <div>
+                  <Label className="text-xs text-bloom-sub">Jak oříznout fotku</Label>
+                  <Select value={editItem.image_fit || 'cover'} onValueChange={v => setEditItem(p => ({ ...p, image_fit: v }))}>
+                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Obsah *</Label>

@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Plus, Calendar, ArrowLeft, Trash2, Newspaper, Image, MapPin, Heart, Video, BookOpen, Upload, Pencil } from 'lucide-react';
 
 import { API, getMediaUrl } from '../lib/api';
+import { IMAGE_FIT_OPTIONS, getImageFitClass } from '../lib/newsImageFit';
 
 // Helper: render video from URL (YouTube, Vimeo, or direct file)
 const renderVideo = (url, className = '') => {
@@ -140,6 +141,7 @@ const NewsPage = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [imageFit, setImageFit] = useState('cover');
   const [newsCat, setNewsCat] = useState('local');
   const [imageFile, setImageFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
@@ -186,9 +188,9 @@ const NewsPage = () => {
         finalVideoUrl = r.data.url;
       }
       
-      await axios.post(`${API}/news`, { title, content, image_url: finalImageUrl, video_url: finalVideoUrl, thumbnail_url: thumbnailUrl || finalImageUrl, category: newsCat });
+      await axios.post(`${API}/news`, { title, content, image_url: finalImageUrl, video_url: finalVideoUrl, thumbnail_url: thumbnailUrl || finalImageUrl, category: newsCat, image_fit: imageFit });
       toast.success('Příspěvek publikován!');
-      setDialogOpen(false); setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl('');
+      setDialogOpen(false); setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl(''); setImageFit('cover');
       setImageFile(null); setVideoFile(null);
       fetchNews();
     } catch (e) { toast.error(e.response?.data?.detail || 'Nepodařilo se publikovat'); }
@@ -207,6 +209,7 @@ const NewsPage = () => {
     setImageUrl(item.image_url || '');
     setVideoUrl(item.video_url || '');
     setThumbnailUrl(item.thumbnail_url || '');
+    setImageFit(item.image_fit || 'cover');
     setNewsCat(item.category || 'local');
     setImageFile(null); setVideoFile(null);
     setEditDialogOpen(true);
@@ -229,14 +232,19 @@ const NewsPage = () => {
         const r = await axios.post(`${API}/news/upload-media`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
         finalVideoUrl = r.data.url;
       }
-      await axios.put(`${API}/news/${editingItem.id}`, { title, content, image_url: finalImageUrl, video_url: finalVideoUrl, thumbnail_url: thumbnailUrl || finalImageUrl, category: newsCat });
+      await axios.put(`${API}/news/${editingItem.id}`, { title, content, image_url: finalImageUrl, video_url: finalVideoUrl, thumbnail_url: thumbnailUrl || finalImageUrl, category: newsCat, image_fit: imageFit });
       toast.success('Příspěvek aktualizován!');
+      const editedId = editingItem.id;
+      const savedImageFit = imageFit;
+      const updatedFields = { title, content, image_url: finalImageUrl, video_url: finalVideoUrl, thumbnail_url: thumbnailUrl || finalImageUrl, category: newsCat, image_fit: imageFit };
       setEditDialogOpen(false); setEditingItem(null);
-      setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl('');
+      setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl(''); setImageFit('cover');
       setImageFile(null); setVideoFile(null);
+      setNewsList(prev => prev.map(n => n.id === editedId ? { ...n, ...updatedFields } : n));
+      setSelected(prev => prev?.id === editedId ? { ...prev, ...updatedFields } : prev);
       await fetchNews();
-      // Refresh selected if editing the viewed article
-      setSelected(prev => prev?.id === editingItem.id ? { ...prev, title, content, image_url: finalImageUrl, video_url: finalVideoUrl, category: newsCat } : prev);
+      setNewsList(prev => prev.map(n => n.id === editedId ? { ...n, image_fit: savedImageFit } : n));
+      setSelected(prev => prev?.id === editedId ? { ...prev, image_fit: savedImageFit } : prev);
     } catch (e) { toast.error(e.response?.data?.detail || 'Nepodařilo se uložit'); }
     finally { setUploading(false); }
   };
@@ -257,7 +265,7 @@ const NewsPage = () => {
         <article>
           {(selected.thumbnail_url || selected.image_url) && (
             <div className="aspect-video mb-6 rounded-xl overflow-hidden">
-              <img src={getMediaUrl(selected.thumbnail_url || selected.image_url)} alt={selected.title} className="w-full h-full object-cover"/>
+              <img src={getMediaUrl(selected.thumbnail_url || selected.image_url)} alt={selected.title} className={`w-full h-full ${getImageFitClass(selected.image_fit)}`}/>
             </div>
           )}
           <h1 className="font-serif text-2xl md:text-3xl font-bold text-bloom-text mb-3">{selected.title}</h1>
@@ -294,7 +302,7 @@ const NewsPage = () => {
       </div>
     </div>
     {/* Edit dialog available from detail view */}
-    <Dialog open={editDialogOpen} onOpenChange={open => { setEditDialogOpen(open); if (!open) { setEditingItem(null); setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl(''); setImageFile(null); setVideoFile(null); } }}>
+    <Dialog open={editDialogOpen} onOpenChange={open => { setEditDialogOpen(open); if (!open) { setEditingItem(null); setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl(''); setImageFit('cover'); setImageFile(null); setVideoFile(null); } }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif text-bloom-text">Upravit článek</DialogTitle>
@@ -330,6 +338,13 @@ const NewsPage = () => {
             <div>
               <Label className="flex items-center gap-1"><Image className="w-3.5 h-3.5"/>Obrázek (URL nebo soubor)</Label>
               <div className="space-y-2">
+                <div data-testid="edit-news-image-fit">
+                  <Label className="text-sm text-bloom-text font-medium">Jak oříznout fotku</Label>
+                  <Select value={imageFit} onValueChange={setImageFit}>
+                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
                 <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-bloom-violet/30 rounded-lg cursor-pointer hover:bg-bloom-violet/5 transition-colors">
                   <Upload className="w-4 h-4 text-bloom-violet shrink-0" />
                   <span className="text-sm text-bloom-sub">{imageFile ? imageFile.name : 'Zvolit soubor'}</span>
@@ -382,7 +397,7 @@ const NewsPage = () => {
                   {isAdmin ? 'Nová aktualita' : 'Sdílet příběh'}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="font-serif text-bloom-text">
                     {isAdmin ? 'Vytvořit aktualitu' : 'Sdílet zkušenost'}
@@ -411,6 +426,13 @@ const NewsPage = () => {
                   })()}
                   <div><Label className="text-bloom-text">Obrázek</Label>
                     <div className="space-y-2">
+                      <div data-testid="news-image-fit">
+                        <Label className="text-sm text-bloom-text font-medium">Jak oříznout fotku</Label>
+                        <Select value={imageFit} onValueChange={setImageFit}>
+                          <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                          <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
                       <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-bloom-violet/30 rounded-lg cursor-pointer hover:bg-bloom-violet/5 transition-colors" data-testid="news-image-upload">
                         <Upload className="w-4 h-4 text-bloom-violet" />
                         <span className="text-sm text-bloom-sub">{imageFile ? imageFile.name : 'Nahrát obrázek...'}</span>
@@ -485,7 +507,7 @@ const NewsPage = () => {
                   {/* Show thumbnail on desktop always; on mobile only for featured card */}
                   {(n.thumbnail_url||n.image_url)&&(
                     <div className={`overflow-hidden ${i===0?'aspect-[21/9]':'aspect-video hidden md:block'}`}>
-                      <img src={getMediaUrl(n.thumbnail_url||n.image_url)} alt={n.title} className="w-full h-full object-cover"/>
+                      <img src={getMediaUrl(n.thumbnail_url||n.image_url)} alt={n.title} className={`w-full h-full ${getImageFitClass(n.image_fit)}`}/>
                     </div>
                   )}
                   <div className="p-3 md:p-4">
@@ -514,7 +536,7 @@ const NewsPage = () => {
     </div>
 
     {/* Edit article dialog (admin or author) */}
-    <Dialog open={editDialogOpen} onOpenChange={open => { setEditDialogOpen(open); if (!open) { setEditingItem(null); setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl(''); setImageFile(null); setVideoFile(null); } }}>
+    <Dialog open={editDialogOpen} onOpenChange={open => { setEditDialogOpen(open); if (!open) { setEditingItem(null); setTitle(''); setContent(''); setImageUrl(''); setVideoUrl(''); setThumbnailUrl(''); setImageFit('cover'); setImageFile(null); setVideoFile(null); } }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif text-bloom-text">Upravit článek</DialogTitle>
@@ -550,6 +572,13 @@ const NewsPage = () => {
             <div>
               <Label className="flex items-center gap-1"><Image className="w-3.5 h-3.5"/>Obrázek (URL nebo soubor)</Label>
               <div className="space-y-2">
+                <div data-testid="edit-news-image-fit">
+                  <Label className="text-sm text-bloom-text font-medium">Jak oříznout fotku</Label>
+                  <Select value={imageFit} onValueChange={setImageFit}>
+                    <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
+                    <SelectContent>{IMAGE_FIT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
                 <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-bloom-violet/30 rounded-lg cursor-pointer hover:bg-bloom-violet/5 transition-colors">
                   <Upload className="w-4 h-4 text-bloom-violet shrink-0" />
                   <span className="text-sm text-bloom-sub">{imageFile ? imageFile.name : 'Zvolit soubor'}</span>

@@ -1,0 +1,17 @@
+/**
+ * Intro animation keyframes — SOURCE COPY for social/media export.
+ * Original: frontend/src/index.css (excerpt)
+ */
+@keyframes petalBloom {
+  0%   { opacity: 0; transform: scale(0) rotate(-15deg); transform-origin: bottom center; }
+  60%  { opacity: 1; transform: scale(1.05) rotate(0deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes introFadeOut {
+  0%   { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}
+@keyframes introWordFade {
+  0%   { opacity: 0; letter-spacing: 0.3em; }
+  100% { opacity: 1; letter-spacing: 0.1em; }
+}

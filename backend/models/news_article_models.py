@@ -9,6 +9,7 @@ class NewsCreate(BaseModel):
     video_url: Optional[str] = ""
     thumbnail_url: Optional[str] = ""
     category: str = "local"
+    image_fit: Optional[str] = "cover"  # cover | contain | cover-top | cover-center | cover-bottom
 
 
 class NewsResponse(BaseModel):
@@ -20,6 +21,7 @@ class NewsResponse(BaseModel):
     video_url: str = ""
     thumbnail_url: str = ""
     category: str = "local"
+    image_fit: str = "cover"
     admin_id: str = ""
     admin_name: str = ""
     author_id: str = ""

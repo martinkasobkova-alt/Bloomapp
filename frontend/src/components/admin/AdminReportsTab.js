@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Flag, Check, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
-import { AdminSortControl, DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
+import { AdminSortControl, SECTION_DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
 
 export function AdminReportsTab({ reports, handleResolveReport, handleDeleteReport }) {
   const [sortOrder, setSortOrder] = useState('date-desc');
@@ -20,7 +20,7 @@ export function AdminReportsTab({ reports, handleResolveReport, handleDeleteRepo
       )}
       {sortedReports.length > 0 && (
         <div className="flex items-center justify-between mb-1">
-          <AdminSortControl value={sortOrder} onChange={setSortOrder} options={DATE_SORT_OPTIONS} testId="reports-sort" />
+          <AdminSortControl value={sortOrder} onChange={setSortOrder} options={SECTION_DATE_SORT_OPTIONS} testId="reports-sort" />
         </div>
       )}
       {sortedReports.map(r => (

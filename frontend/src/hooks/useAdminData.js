@@ -30,7 +30,7 @@ export function useAdminData() {
 
   // News form
   const [showNewsForm, setShowNewsForm] = useState(false);
-  const [newsForm, setNewsForm] = useState({ title: '', content: '', category: 'local', image_url: '' });
+  const [newsForm, setNewsForm] = useState({ title: '', content: '', category: 'local', image_url: '', image_fit: 'cover' });
   const [newsLoading, setNewsLoading] = useState(false);
 
   // Specialist form
@@ -96,7 +96,19 @@ export function useAdminData() {
   // Verification requests
   const [verificationRequests, setVerificationRequests] = useState([]);
 
-  useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
+  useEffect(() => {
+    if (isAdmin) {
+      Promise.all([
+        fetchAll(),
+        fetchContent(),
+        fetchPending(),
+        fetchReports(),
+        fetchBugReports(),
+        fetchReviews(),
+        fetchServices(),
+      ]).catch(() => {});
+    }
+  }, [isAdmin]);
 
   // --- Data fetchers ---
   const fetchAll = async () => {
@@ -396,7 +408,7 @@ export function useAdminData() {
     e.preventDefault();
     if (!newsForm.title || !newsForm.content) { toast.error('Vyplňte název a obsah.'); return; }
     setNewsLoading(true);
-    try { await axios.post(`${API}/news`, newsForm); toast.success('Aktualita přidána!'); setNewsForm({ title: '', content: '', category: 'local', image_url: '' }); setShowNewsForm(false); fetchAll(); }
+    try { await axios.post(`${API}/news`, newsForm); toast.success('Aktualita přidána!'); setNewsForm({ title: '', content: '', category: 'local', image_url: '', image_fit: 'cover' }); setShowNewsForm(false); fetchAll(); }
     catch (err) { toast.error(err.response?.data?.detail || 'Nepodařilo se přidat aktualitu'); }
     finally { setNewsLoading(false); }
   };

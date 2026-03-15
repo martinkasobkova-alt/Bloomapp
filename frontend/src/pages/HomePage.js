@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { API, getMediaUrl } from '../lib/api';
+import { getImageFitClass } from '../lib/newsImageFit';
 import { AnimatedNumber } from '../components/AnimatedNumber';
 
 const SECTION_LABELS = { legal: 'Právní poradna', specialists: 'Trans-friendly odborníci' };
@@ -236,7 +237,7 @@ const HomePage = () => {
                         <Card className="bg-white border-border/50 card-hover" data-testid={`featured-news-home-${f.data.id}`}>
                           <CardContent className="p-4 flex gap-3 items-start">
                             {f.data.image_url && (
-                              <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0"><img src={getMediaUrl(f.data.image_url)} alt={f.data.title} className="w-full h-full object-cover" /></div>
+                              <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0"><img src={getMediaUrl(f.data.image_url)} alt={f.data.title} className={`w-full h-full ${getImageFitClass(f.data.image_fit)}`} /></div>
                             )}
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold text-bloom-text text-sm line-clamp-2">{f.data.title}</p>
@@ -378,7 +379,7 @@ const HomePage = () => {
                   <Card className="bg-white border-border/50 card-hover h-full overflow-hidden">
                     <CardContent className="p-0">
                       {item.image_url && (
-                        <div className="aspect-video overflow-hidden"><img src={getMediaUrl(item.image_url)} alt={item.title} className="w-full h-full object-cover" /></div>
+                        <div className="aspect-video overflow-hidden"><img src={getMediaUrl(item.image_url)} alt={item.title} className={`w-full h-full ${getImageFitClass(item.image_fit)}`} /></div>
                       )}
                       <div className="p-4">
                         <h3 className="font-serif text-base font-semibold text-bloom-text mb-1 line-clamp-2">{item.title}</h3>

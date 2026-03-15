@@ -25,9 +25,44 @@ export const NAME_SORT_OPTIONS = [
   { value: 'name-desc', label: 'Jméno Z–A' },
 ];
 
+export const USER_SORT_OPTIONS = [
+  { value: 'name-asc', label: 'Jméno A–Z' },
+  { value: 'name-desc', label: 'Jméno Z–A' },
+  { value: 'date-desc', label: 'Data registrace – nejnovější' },
+  { value: 'date-asc', label: 'Data registrace – nejstarší' },
+];
+
 export const DATE_SORT_OPTIONS = [
   { value: 'date-desc', label: 'Nejnovější' },
   { value: 'date-asc', label: 'Nejstarší' },
+];
+
+/** Řazení podle data s explicitním popisem – pro všechny sekce */
+export const DATE_SORT_OPTIONS_LABELLED = [
+  { value: 'date-desc', label: 'Data – nejnovější' },
+  { value: 'date-asc', label: 'Data – nejstarší' },
+];
+
+/** Odborníci: jméno + datum přidání */
+export const SPECIALIST_SORT_OPTIONS = [
+  { value: 'name-asc', label: 'Jméno A–Z' },
+  { value: 'name-desc', label: 'Jméno Z–A' },
+  { value: 'date-desc', label: 'Data – nejnovější' },
+  { value: 'date-asc', label: 'Data – nejstarší' },
+];
+
+/** Aktuality: název + datum */
+export const NEWS_SORT_OPTIONS = [
+  { value: 'name-asc', label: 'Název A–Z' },
+  { value: 'name-desc', label: 'Název Z–A' },
+  { value: 'date-desc', label: 'Data – nejnovější' },
+  { value: 'date-asc', label: 'Data – nejstarší' },
+];
+
+/** Recenze, Nabídky, Nahlášení, Bug reports, Ověření, Ke schválení: datum (s popisem) */
+export const SECTION_DATE_SORT_OPTIONS = [
+  { value: 'date-desc', label: 'Data – nejnovější' },
+  { value: 'date-asc', label: 'Data – nejstarší' },
 ];
 
 export function sortByName(items, order, nameField = 'username') {

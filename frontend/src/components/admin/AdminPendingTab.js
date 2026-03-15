@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Check, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
+import { AdminSortControl, SECTION_DATE_SORT_OPTIONS, sortByDate } from './AdminSortControl';
 
 export function AdminPendingTab({ pendingSpecialists, handleApproveSpecialist, handleRejectSpecialist }) {
-  return pendingSpecialists.length === 0 ? (
+  const [sortOrder, setSortOrder] = useState('date-desc');
+  const sorted = useMemo(() => sortByDate(pendingSpecialists, sortOrder, 'created_at'), [pendingSpecialists, sortOrder]);
+
+  return sorted.length === 0 ? (
     <div className="text-center py-12">
       <Check className="w-8 h-8 text-bloom-mint mx-auto mb-2" />
       <p className="text-sm text-bloom-sub">Žádní odborníci ke schválení.</p>
     </div>
   ) : (
-    <div className="space-y-3">
-      {pendingSpecialists.map(s => (
+    <>
+      <div className="mb-4">
+        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={SECTION_DATE_SORT_OPTIONS} testId="pending-sort" />
+      </div>
+      <div className="space-y-3">
+      {sorted.map(s => (
         <Card key={s.id} className="bg-white border-amber-200" data-testid={`pending-specialist-${s.id}`}>
           <CardContent className="p-4">
             <div className="flex items-start justify-between gap-3">
@@ -34,6 +42,7 @@ export function AdminPendingTab({ pendingSpecialists, handleApproveSpecialist, h
           </CardContent>
         </Card>
       ))}
-    </div>
+      </div>
+    </>
   );
 }

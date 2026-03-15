@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { getAvatarImage } from '../Layout';
 import { roleLabels, roleColors } from './shared';
-import { AdminSortControl, NAME_SORT_OPTIONS, sortByName } from './AdminSortControl';
+import { AdminSortControl, USER_SORT_OPTIONS, sortByName, sortByDate } from './AdminSortControl';
 
 export function AdminUsersTab({
   users, loading, currentUser, isSuperAdmin,
@@ -25,7 +25,12 @@ export function AdminUsersTab({
     ? users.filter(u => u.username?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase()))
     : users;
 
-  const sortedUsers = useMemo(() => sortByName(filteredUsers, sortOrder), [filteredUsers, sortOrder]);
+  const sortedUsers = useMemo(() => {
+    if (sortOrder === 'name-asc' || sortOrder === 'name-desc') {
+      return sortByName(filteredUsers, sortOrder);
+    }
+    return sortByDate(filteredUsers, sortOrder, 'created_at');
+  }, [filteredUsers, sortOrder]);
 
   const startEditLabel = (u, e) => {
     e.stopPropagation();
@@ -57,7 +62,7 @@ export function AdminUsersTab({
             data-testid="user-search-input"
           />
         </div>
-        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={NAME_SORT_OPTIONS} testId="users-sort" />
+        <AdminSortControl value={sortOrder} onChange={setSortOrder} options={USER_SORT_OPTIONS} testId="users-sort" />
       </div>
       {loading ? (
         <div className="flex justify-center py-12"><div className="spinner" /></div>
