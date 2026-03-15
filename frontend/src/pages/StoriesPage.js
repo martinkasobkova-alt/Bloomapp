@@ -11,7 +11,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
-import { Plus, ArrowLeft, Calendar, Trash2, MessageCircle, Send, Pencil, Upload } from 'lucide-react';
+import { Plus, ArrowLeft, Calendar, Trash2, MessageCircle, Send, Pencil, Upload, Heart } from 'lucide-react';
 import { API, getMediaUrl } from '../lib/api';
 import { IMAGE_FIT_OPTIONS, getImageFitClass } from '../lib/newsImageFit';
 import { getAvatarImage } from '../components/Layout';
@@ -349,6 +349,14 @@ const StoriesPage = () => {
           defaultColor={markerColor}
         />
         <div className="pride-bar mb-2" />
+
+        <div className="mb-5 p-4 bg-[#F5A9B8]/10 border border-[#F5A9B8]/30 rounded-xl flex items-start gap-3" data-testid="zkusenosti-note">
+          <Heart className="w-4 h-4 text-[#F5A9B8] mt-0.5 shrink-0" />
+          <p className="text-sm text-bloom-sub leading-relaxed">
+            <strong className="text-bloom-text">Osobní zkušenosti členů komunity.</strong>{' '}
+            Tato sekce slouží ke sdílení životních zkušeností a příběhů. Příspěvky mohou obsahovat text, obrázky nebo videa.
+          </p>
+        </div>
 
         {/* Create story button */}
         {isAuthenticated && (
