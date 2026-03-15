@@ -96,20 +96,6 @@ export function useAdminData() {
   // Verification requests
   const [verificationRequests, setVerificationRequests] = useState([]);
 
-  useEffect(() => {
-    if (isAdmin) {
-      Promise.all([
-        fetchAll(),
-        fetchContent(),
-        fetchPending(),
-        fetchReports(),
-        fetchBugReports(),
-        fetchReviews(),
-        fetchServices(),
-      ]).catch(() => {});
-    }
-  }, [isAdmin, fetchAll, fetchContent, fetchPending, fetchReports, fetchBugReports, fetchReviews, fetchServices]);
-
   // --- Data fetchers ---
   const fetchAll = useCallback(async () => {
     try {
@@ -191,6 +177,21 @@ export function useAdminData() {
   const fetchBugReports = useCallback(async () => {
     try { const r = await axios.get(`${API}/admin/bug-reports`); setBugReports(r.data); } catch {}
   }, []);
+
+  useEffect(() => {
+    if (isAdmin) {
+      Promise.all([
+        fetchAll(),
+        fetchContent(),
+        fetchPending(),
+        fetchReports(),
+        fetchBugReports(),
+        fetchReviews(),
+        fetchServices(),
+      ]).catch(() => {});
+    }
+  }, [isAdmin, fetchAll, fetchContent, fetchPending, fetchReports, fetchBugReports, fetchReviews, fetchServices]);
+
   const fetchVerificationRequests = async () => {
     try { const r = await axios.get(`${API}/admin/verification-requests`); setVerificationRequests(r.data); } catch {}
   };

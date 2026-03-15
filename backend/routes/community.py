@@ -9,7 +9,8 @@ router = APIRouter()
 @router.get("/stats")
 async def get_community_stats():
     members = await db.users.count_documents({})
-    experiences = await db.news.count_documents({})
+    # "sdílených zkušeností" = only stories (news with category zkusenosti), not all news/aktuality
+    experiences = await db.news.count_documents({"category": "zkusenosti"})
     specialists = await db.specialists.count_documents({})
     services = await db.services.count_documents({})
     return {
